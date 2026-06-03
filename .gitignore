@@ -1,3 +1,5 @@
 CLAUDE.md
 server/node_modules/
-.claude/
+.claude/.claude/
+server/node_modules/
+server/.env
