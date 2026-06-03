@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2B3E1E" />
+
+  <title>Not found — A Case for Wisdom</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+
+  <style>
+    .notfound {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-8) var(--space-section-x);
+      background-color: var(--color-surface-base);
+    }
+    .notfound__code {
+      font-family: var(--font-display);
+      font-weight: var(--weight-light);
+      font-size: clamp(7rem, 28vw, 16rem);
+      line-height: 0.9;
+      letter-spacing: var(--tracking-tight);
+      color: var(--color-green);
+      opacity: 0.14;
+      margin: 0;
+    }
+    .notfound__text {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: var(--weight-light);
+      font-size: var(--text-2xl);
+      color: var(--color-green);
+      margin: var(--space-4) 0 var(--space-7);
+    }
+    .notfound__home {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      letter-spacing: var(--tracking-wide);
+      color: var(--color-green);
+      text-decoration: none;
+      border-bottom: 1px solid var(--color-gold);
+      padding-bottom: 2px;
+      transition: color var(--duration-base) var(--ease-organic),
+                  border-color var(--duration-base) var(--ease-organic);
+    }
+    .notfound__home:hover {
+      color: var(--color-gold-hover);
+      border-bottom-color: var(--color-gold-hover);
+    }
+  </style>
+</head>
+
+<body>
+  <main class="notfound">
+    <p class="notfound__code">404</p>
+    <p class="notfound__text">This page doesn’t exist.</p>
+    <a class="notfound__home" href="/">← Go home</a>
+  </main>
+</body>
+</html>

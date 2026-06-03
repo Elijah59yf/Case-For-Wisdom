@@ -1,0 +1,218 @@
+/* ============================================================
+   A Case for Wisdom — Design Tokens
+   Single source of truth. Every other stylesheet pulls from here.
+   Anchor: Organic (warmer-surface variant — cream root by brand decision).
+   ============================================================ */
+
+:root {
+
+  /* ---------- 1. Color — Surfaces ---------- */
+  /* Three-tier warm surface system. Cream is the page; sand alternates
+     sections; oat tints cards. Never mix more than two tiers on a screen. */
+  --color-surface-base:  #F5F0EA;   /* cream  — page background */
+  --color-surface-mid:   #E8DCC7;   /* sand   — alternating sections */
+  --color-surface-card:  #D4B895;   /* oat    — subtle card tint */
+
+  /* ---------- 2. Color — Brand ---------- */
+  --color-green:    #2B3E1E;   /* primary — headlines, nav, footer */
+  --color-gold:     #B8953A;   /* accent  — borders, CTAs, underlines. NEVER a fill. */
+  --color-teal:     #4A7B82;   /* secondary accent — used sparingly */
+
+  /* Tonal variations for hover / disabled / focus states */
+  --color-green-hover:   #364E26;
+  --color-green-muted:   #4A5C3D;
+  --color-gold-hover:    #A07F2D;
+  --color-gold-soft:     #D4B568;  /* gold-on-cream subtle dividers */
+  --color-teal-hover:    #3D666C;
+
+  /* ---------- 3. Color — Text ---------- */
+  --color-text:        #1A1A1A;    /* body copy */
+  --color-text-muted:  #6B6B6B;    /* captions, metadata, timestamps */
+  --color-text-soft:   #8A8276;    /* placeholder, secondary captions */
+  --color-text-invert: #F5F0EA;    /* text on dark surfaces */
+
+  /* ---------- 4. Color — Semantic ---------- */
+  --color-success: #5C7A3D;
+  --color-error:   #B0463C;
+  --color-warning: #C28A2E;
+  --color-info:    #4A7B82;
+
+  /* ---------- 5. Color — Borders & Lines ---------- */
+  --color-border-hair:   rgba(43, 62, 30, 0.12);   /* hairline on cream */
+  --color-border-soft:   rgba(43, 62, 30, 0.20);
+  --color-border-strong: rgba(43, 62, 30, 0.45);
+  --color-border-gold:   rgba(184, 149, 58, 0.55); /* gold accent rule */
+  --color-rule:          var(--color-border-soft);  /* generic hairline border / divider */
+
+  /* ---------- 6. Color — Overlays & Scrim ---------- */
+  --color-scrim-soft: rgba(26, 26, 26, 0.40);
+  --color-scrim-hard: rgba(26, 26, 26, 0.72);
+
+  /* ---------- 7. Typography — Families ---------- */
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-body:    "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ---------- 8. Typography — Weights ---------- */
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ---------- 9. Typography — Fluid Type Scale ---------- */
+  /* All headings use clamp(min, fluid, max). No fixed px on display. */
+  --text-xs:    0.75rem;                                       /* 12px — fixed UI/meta */
+  --text-sm:    0.875rem;                                      /* 14px — fixed UI */
+  --text-base:  1rem;                                          /* 16px — body fixed */
+  --text-md:    clamp(1.0625rem, 0.95rem + 0.55vw, 1.1875rem); /* 17–19 lead body */
+  --text-lg:    clamp(1.25rem,  1.10rem + 0.75vw, 1.5rem);     /* 20–24 sub-lead */
+  --text-xl:    clamp(1.5rem,   1.30rem + 1.00vw, 1.875rem);   /* 24–30 small head */
+  --text-2xl:   clamp(1.875rem, 1.55rem + 1.60vw, 2.5rem);     /* 30–40 section head */
+  --text-3xl:   clamp(2.25rem,  1.80rem + 2.25vw, 3.25rem);    /* 36–52 page head */
+  --text-4xl:   clamp(2.75rem,  2.10rem + 3.25vw, 4.5rem);     /* 44–72 hero head */
+  --text-5xl:   clamp(3.5rem,   2.50rem + 5.00vw, 6.5rem);     /* 56–104 oversized display */
+
+  /* ---------- 10. Typography — Line height ---------- */
+  --leading-tight:   1.10;   /* hero display */
+  --leading-snug:    1.20;   /* large headings */
+  --leading-normal:  1.45;   /* sub-headings, leads */
+  --leading-relaxed: 1.65;   /* body prose */
+  --leading-loose:   1.80;   /* long-form blog body */
+
+  /* ---------- 11. Typography — Letter spacing ---------- */
+  --tracking-tightest: -0.03em;
+  --tracking-tight:    -0.015em;
+  --tracking-normal:   0;
+  --tracking-wide:     0.04em;
+  --tracking-widest:   0.14em;   /* small caps labels */
+
+  /* ---------- 12. Typography — Measure (line length) ---------- */
+  --measure-narrow: 52ch;
+  --measure-prose:  68ch;
+  --measure-wide:   78ch;
+
+  /* ---------- 13. Spacing — 4px base scale ---------- */
+  --space-0:   0;
+  --space-1:   0.25rem;   /* 4   */
+  --space-2:   0.5rem;    /* 8   */
+  --space-3:   0.75rem;   /* 12  */
+  --space-4:   1rem;      /* 16  */
+  --space-5:   1.5rem;    /* 24  */
+  --space-6:   2rem;      /* 32  */
+  --space-7:   2.5rem;    /* 40  */
+  --space-8:   3rem;      /* 48  */
+  --space-9:   4rem;      /* 64  */
+  --space-10:  5rem;      /* 80  */
+  --space-11:  6rem;      /* 96  */
+  --space-12:  8rem;      /* 128 */
+  --space-13:  10rem;     /* 160 */
+
+  /* Fluid section padding (mobile → desktop) */
+  --space-section-y: clamp(3rem, 6vw, 7rem);
+  --space-section-x: clamp(1.25rem, 4vw, 4rem);
+  --space-gutter:    clamp(1rem, 2.5vw, 2rem);
+
+  /* ---------- 14. Layout — Container widths ---------- */
+  --container-narrow: 42rem;   /* 672 — long-form prose */
+  --container-prose:  52rem;   /* 832 — blog post */
+  --container-mid:    64rem;   /* 1024 — about, single product */
+  --container-wide:   76rem;   /* 1216 — listings, shop grid */
+  --container-full:   86rem;   /* 1376 — homepage editorial spreads */
+
+  /* ---------- 15. Layout — Breakpoints (mobile-first) ---------- */
+  /* These exist for reference; media queries use the raw values too. */
+  --bp-sm:  30rem;     /* 480 */
+  --bp-md:  48rem;     /* 768 */
+  --bp-lg:  64rem;     /* 1024 */
+  --bp-xl:  80rem;     /* 1280 */
+  --bp-2xl: 96rem;     /* 1536 */
+
+  /* ---------- 16. Border radius — Organic, never uniformly rounded ---------- */
+  --radius-none:  0;
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+  --radius-lg:    16px;
+  --radius-xl:    24px;
+  --radius-pill:  999px;
+  --radius-organic-a: 24px 4px 24px 4px;   /* asymmetric — card variant A */
+  --radius-organic-b: 4px 24px 4px 24px;   /* asymmetric — card variant B */
+
+  /* ---------- 17. Borders — Hairlines (gold rules and dividers) ---------- */
+  --border-hair:   1px solid var(--color-border-hair);
+  --border-soft:   1px solid var(--color-border-soft);
+  --border-gold:   1px solid var(--color-border-gold);
+  --border-gold-2: 2px solid var(--color-gold);   /* CTA emphasis */
+
+  /* ---------- 18. Shadows — soft, paper-like only ---------- */
+  /* No harsh black drop shadows. Warm-tinted, low spread. */
+  --shadow-none: none;
+  --shadow-soft: 0 1px 2px rgba(43, 62, 30, 0.04),
+                 0 4px 12px rgba(43, 62, 30, 0.06);
+  --shadow-card: 0 2px 4px rgba(43, 62, 30, 0.06),
+                 0 12px 28px rgba(43, 62, 30, 0.08);
+  --shadow-lift: 0 6px 14px rgba(43, 62, 30, 0.08),
+                 0 24px 48px rgba(43, 62, 30, 0.10);
+  --shadow-focus: 0 0 0 3px rgba(184, 149, 58, 0.35);
+
+  /* ---------- 19. Transitions ---------- */
+  --duration-fast:    150ms;
+  --duration-base:    250ms;
+  --duration-slow:    400ms;
+  --duration-slower:  600ms;
+  --duration-breathe: 4500ms;   /* hero breathing animations */
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:       cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-organic:  cubic-bezier(0.33, 1, 0.68, 1);   /* gentle eased — default for Organic */
+
+  --transition-colors:    color var(--duration-base) var(--ease-organic),
+                          background-color var(--duration-base) var(--ease-organic),
+                          border-color var(--duration-base) var(--ease-organic);
+  --transition-transform: transform var(--duration-base) var(--ease-organic);
+  --transition-all:       all var(--duration-base) var(--ease-organic);
+
+  /* ---------- 20. Texture — Paper grain (SVG noise) ---------- */
+  /* Pronounced slightly above anchor default to compensate for cream surface. */
+  --texture-grain-opacity: 0.045;   /* anchor default ~0.01–0.03; we run 0.045 */
+  --texture-grain:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.13 0 0 0 0 0.09 0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+
+  /* ---------- 21. Z-index layers ---------- */
+  --z-base:     0;
+  --z-raised:   10;
+  --z-sticky:   100;    /* sticky section headers */
+  --z-nav:      200;    /* primary navbar */
+  --z-dropdown: 300;    /* nav dropdowns, autocomplete */
+  --z-overlay:  400;    /* scrims */
+  --z-drawer:   500;    /* cart drawer, mobile menu */
+  --z-modal:    600;    /* dialogs */
+  --z-toast:    700;    /* toasts, snackbars */
+  --z-tooltip:  800;
+  --z-max:      9999;   /* dev/debug only */
+
+  /* ---------- 22. Focus ring (accessibility — gold accent on cream) ---------- */
+  --focus-ring:      0 0 0 3px rgba(184, 149, 58, 0.45);
+  --focus-ring-dark: 0 0 0 3px rgba(245, 240, 234, 0.65);  /* on green surfaces */
+
+  /* ---------- 23. Form controls ---------- */
+  --control-height-sm: 2.25rem;   /* 36 */
+  --control-height-md: 2.75rem;   /* 44 — meets 44×44 touch target */
+  --control-height-lg: 3.25rem;   /* 52 */
+  --control-pad-x:     1rem;
+  --control-radius:    var(--radius-sm);
+}
+
+/* ============================================================
+   Reduced motion — collapse all motion-bearing tokens
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast:    0ms;
+    --duration-base:    0ms;
+    --duration-slow:    0ms;
+    --duration-slower:  0ms;
+    --duration-breathe: 0ms;
+  }
+}

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dashboard — A Case for Wisdom · Admin</title>
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+
+<body class="admin-app">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__brand">
+      <svg class="admin-sidebar__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+        <path d="M32 14 V50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1.25" fill="none"/>
+        <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1.25" fill="none"/>
+        <path d="M14 50 Q22 46 32 50 T 50 50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span class="admin-sidebar__brand-text">
+        <span class="admin-sidebar__name">A Case for Wisdom</span>
+        <span class="admin-sidebar__badge">Admin</span>
+      </span>
+    </div>
+
+    <nav class="admin-nav" aria-label="Admin">
+      <a class="admin-nav__link is-active" href="/admin/" aria-current="page"><span class="admin-nav__dot"></span>Dashboard</a>
+      <a class="admin-nav__link" href="/admin/posts/"><span class="admin-nav__dot"></span>Posts</a>
+      <a class="admin-nav__link" href="/admin/products/"><span class="admin-nav__dot"></span>Products</a>
+      <a class="admin-nav__link" href="/admin/admins/"><span class="admin-nav__dot"></span>Admins</a>
+      <a class="admin-nav__link" href="/admin/media/"><span class="admin-nav__dot"></span>Media</a>
+      <a class="admin-nav__link" href="/admin/settings/"><span class="admin-nav__dot"></span>Settings</a>
+    </nav>
+
+    <div class="admin-sidebar__foot">
+      <button type="button" class="admin-logout" id="logout-link">
+        <span class="admin-nav__dot"></span>Log out
+      </button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-pagehead">
+      <h1 class="admin-pagehead__title">Dashboard</h1>
+      <div class="admin-pagehead__actions">
+        <a class="btn-admin-ghost" href="/admin/products/new.html">New Product</a>
+        <a class="btn-admin-primary" href="/admin/posts/new.html">New Post</a>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <section class="stat-grid" aria-label="Overview">
+      <div class="stat-card">
+        <div class="stat-card__value" id="stat-posts"><span class="sk">&nbsp;</span></div>
+        <div class="stat-card__label">Total posts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__value" id="stat-published"><span class="sk">&nbsp;</span></div>
+        <div class="stat-card__label">Published</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__value" id="stat-products"><span class="sk">&nbsp;</span></div>
+        <div class="stat-card__label">Products</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__value" id="stat-orders"><span class="sk">&nbsp;</span></div>
+        <div class="stat-card__label">Orders</div>
+      </div>
+    </section>
+
+    <!-- Recent posts -->
+    <section class="admin-section" aria-labelledby="recent-heading">
+      <h2 class="admin-section__title" id="recent-heading">Recent posts</h2>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Status</th>
+            <th scope="col">Date</th>
+            <th scope="col"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="recent-posts">
+          <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td></td></tr>
+          <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td></td></tr>
+          <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script type="module">
+    import { isAuthenticated, signOut } from "/assets/js/auth.js";
+    import { adminGetPosts, adminGetProducts, adminGetOrders } from "/assets/js/lib/api.js";
+
+    // ── Auth guard (CLAUDE.md §11 — every admin page but login gates here) ──
+    if (!(await isAuthenticated())) {
+      window.location.replace("/admin/login.html");
+    }
+
+    document.getElementById("logout-link").addEventListener("click", async () => {
+      try { await signOut(); } catch {}
+      window.location.replace("/admin/login.html");
+    });
+
+    const DATE_FMT = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "short", day: "numeric" });
+
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    function setStat(id, value) {
+      document.getElementById(id).textContent = String(value);
+    }
+
+    // Errors must degrade to 0 / empty — never a broken UI.
+    async function safe(promise) {
+      try {
+        const v = await promise;
+        return Array.isArray(v) ? v : (Array.isArray(v?.data) ? v.data : []);
+      } catch (err) {
+        console.error("[dashboard] fetch failed", err);
+        return null; // null signals "couldn't load" → render as 0
+      }
+    }
+
+    function renderRecentPosts(posts) {
+      const tbody = document.getElementById("recent-posts");
+      if (!posts || !posts.length) {
+        tbody.innerHTML = `<tr class="admin-empty"><td colspan="4">No posts yet.</td></tr>`;
+        return;
+      }
+      const recent = posts.slice(0, 5);
+      tbody.innerHTML = recent.map((p) => {
+        const published = !!p.published;
+        const date = p.created_at ? DATE_FMT.format(new Date(p.created_at)) : "—";
+        const status = published
+          ? `<span class="badge badge--published">Published</span>`
+          : `<span class="badge badge--draft">Draft</span>`;
+        return `
+          <tr>
+            <td>${escapeHTML(p.title || "(untitled)")}</td>
+            <td>${status}</td>
+            <td>${escapeHTML(date)}</td>
+            <td><a href="/admin/posts/edit.html?id=${encodeURIComponent(p.id)}">Edit</a></td>
+          </tr>`;
+      }).join("");
+    }
+
+    (async function init() {
+      const [posts, products, orders] = await Promise.all([
+        safe(adminGetPosts()),
+        safe(adminGetProducts()),
+        safe(adminGetOrders()),
+      ]);
+
+      const postList = posts || [];
+      setStat("stat-posts", postList.length);
+      setStat("stat-published", postList.filter((p) => p.published).length);
+      setStat("stat-products", (products || []).length);
+      setStat("stat-orders", (orders || []).length);
+
+      renderRecentPosts(posts);
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2B3E1E" />
+
+  <title>Thank you — A Case for Wisdom</title>
+  <meta name="description" content="Your order has been received. Thank you." />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+
+  <style>
+    /* One-off confirmation layout — no dedicated stylesheet needed. */
+    .success {
+      max-width: var(--container-prose);
+      margin-inline: auto;
+      padding: var(--space-12) var(--space-section-x);
+      text-align: center;
+    }
+    .success__eyebrow {
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: var(--color-gold-hover);
+      margin-bottom: var(--space-5);
+    }
+    .success__headline {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: var(--weight-light);
+      font-size: var(--text-4xl);
+      line-height: var(--leading-tight);
+      color: var(--color-green);
+      margin: 0;
+      text-wrap: balance;
+    }
+    .success__body {
+      margin-top: var(--space-5);
+      font-family: var(--font-body);
+      font-size: var(--text-md);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-muted);
+      max-width: 52ch;
+      margin-inline: auto;
+    }
+    .success__ref {
+      margin-top: var(--space-6);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      letter-spacing: var(--tracking-wide);
+      color: var(--color-text);
+    }
+    .success__ref code {
+      font-family: var(--font-body);
+      letter-spacing: var(--tracking-widest);
+      color: var(--color-green);
+      border-bottom: var(--border-gold);
+      padding-bottom: 2px;
+    }
+    .success__actions {
+      margin-top: var(--space-8);
+      display: flex;
+      gap: var(--space-5);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a class="nav__brand" href="/" aria-label="A Case for Wisdom — Home">
+        <svg class="nav__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.55"/>
+          <path d="M32 14 V50" stroke="currentColor" stroke-width="1.25" fill="none"/>
+          <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M14 50 Q22 46 32 50 T 50 50" stroke="#B8953A" stroke-width="1.25" fill="none"/>
+        </svg>
+        <span class="nav__brand-text" data-site-name></span>
+      </a>
+      <nav class="nav__links" aria-label="Primary" data-nav-links></nav>
+      <div class="nav__actions">
+        <a class="nav__cart" href="/cart/" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M3 5h2l2.4 11.2A2 2 0 0 0 9.36 18h8.28a2 2 0 0 0 1.96-1.6L21 9H6"/>
+            <circle cx="10" cy="21" r="1.2"/>
+            <circle cx="18" cy="21" r="1.2"/>
+          </svg>
+          <span class="nav__cart-count" data-cart-count hidden>0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="success">
+      <p class="success__eyebrow">Order received</p>
+      <h1 class="success__headline">Thank you for your order.</h1>
+      <p class="success__body">
+        A confirmation is on its way to your inbox. Your considered objects will
+        be wrapped and sent with care.
+      </p>
+      <p class="success__ref" data-ref hidden>
+        Order reference <code data-ref-code></code>
+      </p>
+      <div class="success__actions">
+        <a class="btn btn--primary" href="/">Continue reading</a>
+        <a class="btn" href="/shop/">Back to shop</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__brand" data-site-name></div>
+        <p class="footer__tagline" data-footer-tagline></p>
+      </div>
+      <div>
+        <p class="footer__heading">Read</p>
+        <div class="footer__list">
+          <a class="footer__link" href="/">Journal</a>
+          <a class="footer__link" href="/about.html">About</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer__heading">Shop</p>
+        <div class="footer__list">
+          <a class="footer__link" href="/shop/">All products</a>
+          <a class="footer__link" href="/cart/">Cart</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer__heading">Elsewhere</p>
+        <div class="footer__list">
+          <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+          <a class="footer__link" data-social="substack" href="#" rel="noopener" hidden>Substack</a>
+          <a class="footer__link" href="mailto:hello@acaseforwisdom.com">Write</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> <span data-site-name></span> — <span data-footer-copy></span></span>
+      <span>All prices in CAD.</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { loadNav, loadFooter, loadSettings } from "/assets/js/site.js";
+    import { clearCart } from "/assets/js/cart.js";
+
+    document.querySelector("[data-year]").textContent = new Date().getFullYear();
+
+    // The order is placed — empty the cart so the bubble resets everywhere.
+    clearCart();
+
+    // Show the order reference from Stripe's return_url (?payment_intent=…).
+    const pi = new URLSearchParams(window.location.search).get("payment_intent");
+    if (pi) {
+      const ref = document.querySelector("[data-ref]");
+      document.querySelector("[data-ref-code]").textContent = pi.slice(-8).toUpperCase();
+      ref.hidden = false;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadNav();
+      loadSettings();
+      loadFooter();
+    });
+  </script>
+
+</body>
+</html>

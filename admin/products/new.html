@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>New product — A Case for Wisdom</title>
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+
+  <style>
+    /* Product-specific controls (no new global CSS file — local to this page). */
+    .product-desc {
+      width: 100%;
+      min-height: 260px;
+      resize: vertical;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+    }
+    .product-desc:focus { outline: none; border-color: var(--color-gold); box-shadow: var(--shadow-focus); }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap: var(--space-3);
+      margin-top: var(--space-3);
+    }
+    .image-grid__item {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--color-cream);
+    }
+    .image-grid__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .image-grid__remove {
+      position: absolute; top: 4px; right: 4px;
+      width: 22px; height: 22px; line-height: 1;
+      border: none; border-radius: 50%;
+      background: rgba(26,26,26,0.72); color: #fff;
+      font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .image-grid__empty { font-size: var(--text-sm); color: var(--color-text-muted); margin-top: var(--space-2); }
+
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+    .toggle-row .field__label { margin: 0; }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex: 0 0 44px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch__track {
+      position: absolute; inset: 0; cursor: pointer;
+      background: var(--color-border); border-radius: 999px;
+      transition: background 150ms ease;
+    }
+    .switch__track::before {
+      content: ""; position: absolute; left: 3px; top: 3px;
+      width: 18px; height: 18px; background: #fff; border-radius: 50%;
+      transition: transform 150ms ease;
+    }
+    .switch input:checked + .switch__track { background: var(--admin-green); }
+    .switch input:checked + .switch__track::before { transform: translateX(20px); }
+    .switch input:focus-visible + .switch__track { box-shadow: var(--shadow-focus); }
+  </style>
+</head>
+
+<body>
+
+  <header class="admin-topbar">
+    <h1 class="admin-topbar__title">New product</h1>
+    <div class="admin-topbar__actions">
+      <a class="btn btn--ghost" href="/admin/products/">Cancel</a>
+    </div>
+  </header>
+
+  <main class="editor">
+
+    <!-- Left: name + description + images -->
+    <div class="editor__main">
+      <input class="editor__title" type="text" id="name"
+        placeholder="Product name" autocomplete="off" />
+
+      <label class="field">
+        <span class="field__label">Description</span>
+        <textarea class="product-desc" id="description"
+          placeholder="Describe the object — material, dimensions, the story behind it."></textarea>
+      </label>
+
+      <div class="field" style="margin-top: var(--space-5);">
+        <span class="field__label">Images</span>
+        <input class="cover-upload__input" type="file" id="images" accept="image/*" multiple />
+        <div class="image-grid" id="image-grid"></div>
+        <p class="image-grid__empty" id="image-empty">No images added yet.</p>
+      </div>
+    </div>
+
+    <!-- Right: pricing + meta + actions -->
+    <aside class="editor__sidebar">
+      <h2 class="editor__sidebar-heading">Product details</h2>
+
+      <label class="field">
+        <span class="field__label">Price (CAD)</span>
+        <input class="input" type="number" id="price" min="0" step="0.01" placeholder="0.00" />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Category</span>
+        <input class="input" type="text" id="category" placeholder="Print, Paper, Object…" />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Stock count</span>
+        <input class="input" type="number" id="stock_count" min="0" step="1" value="0" />
+      </label>
+
+      <div class="field toggle-row">
+        <span class="field__label">In stock</span>
+        <span class="switch">
+          <input type="checkbox" id="in_stock" checked />
+          <span class="switch__track"></span>
+        </span>
+      </div>
+
+      <label class="field">
+        <span class="field__label">Stripe Price ID (optional)</span>
+        <input class="input" type="text" id="stripe_price_id" placeholder="price_…" autocomplete="off" />
+      </label>
+
+      <div class="editor__actions">
+        <button class="btn btn--primary" type="button" id="publish-btn">Publish</button>
+        <button class="btn btn--ghost" type="button" id="save-btn">Save</button>
+      </div>
+    </aside>
+
+  </main>
+
+  <script type="module">
+    import { adminCreateProduct, adminUploadFile } from "/assets/js/lib/api.js";
+    import { isAuthenticated } from "/assets/js/auth.js";
+
+    // ── Auth guard ──────────────────────────────────────────────────
+    if (!(await isAuthenticated())) {
+      window.location.replace("/admin/login.html");
+    }
+
+    // ── Toast ───────────────────────────────────────────────────────
+    let toastTimer;
+    function toast(message, kind = "error") {
+      clearTimeout(toastTimer);
+      let el = document.querySelector(".toast");
+      if (!el) {
+        el = document.createElement("div");
+        el.className = "toast";
+        el.setAttribute("role", "alert");
+        document.body.appendChild(el);
+      }
+      el.classList.toggle("toast--success", kind === "success");
+      el.textContent = message;
+      el.hidden = false;
+      toastTimer = setTimeout(() => { el.hidden = true; }, 4000);
+    }
+
+    // ── Image staging (uploaded on save) ────────────────────────────
+    const imageInput = document.getElementById("images");
+    const grid = document.getElementById("image-grid");
+    const emptyMsg = document.getElementById("image-empty");
+    let pendingFiles = []; // { file, url } objects-url previews
+
+    function renderImages() {
+      grid.innerHTML = "";
+      emptyMsg.hidden = pendingFiles.length > 0;
+      pendingFiles.forEach((entry, i) => {
+        const item = document.createElement("div");
+        item.className = "image-grid__item";
+        item.innerHTML = `<img src="${entry.url}" alt="" /><button type="button" class="image-grid__remove" aria-label="Remove image">×</button>`;
+        item.querySelector(".image-grid__remove").addEventListener("click", () => {
+          URL.revokeObjectURL(entry.url);
+          pendingFiles.splice(i, 1);
+          renderImages();
+        });
+        grid.appendChild(item);
+      });
+    }
+
+    imageInput.addEventListener("change", () => {
+      for (const file of imageInput.files) {
+        pendingFiles.push({ file, url: URL.createObjectURL(file) });
+      }
+      imageInput.value = "";
+      renderImages();
+    });
+
+    // ── Slug from name (server also slugifies; this mirrors it) ──────
+    function slugify(name) {
+      return name.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-");
+    }
+
+    // ── Save / publish ──────────────────────────────────────────────
+    const publishBtn = document.getElementById("publish-btn");
+    const saveBtn = document.getElementById("save-btn");
+
+    function setBusy(busy) {
+      publishBtn.disabled = busy;
+      saveBtn.disabled = busy;
+    }
+
+    async function save(forcePublish) {
+      const name = document.getElementById("name").value.trim();
+      const priceRaw = document.getElementById("price").value;
+      const price = Number(priceRaw);
+
+      if (!name) { toast("A product name is required."); return; }
+      if (priceRaw === "" || !Number.isFinite(price) || price < 0) {
+        toast("A valid price is required."); return;
+      }
+
+      setBusy(true);
+      try {
+        // 1. Upload every staged image first; collect the returned URLs.
+        const images = [];
+        for (const entry of pendingFiles) {
+          const { url } = await adminUploadFile(entry.file);
+          images.push(url);
+        }
+
+        const inStock = forcePublish ? true : document.getElementById("in_stock").checked;
+
+        // 2. Build payload
+        const payload = {
+          name,
+          slug: slugify(name),
+          description: document.getElementById("description").value.trim() || null,
+          price,
+          images,
+          category: document.getElementById("category").value.trim() || null,
+          in_stock: inStock,
+          stock_count: parseInt(document.getElementById("stock_count").value, 10) || 0,
+          stripe_price_id: document.getElementById("stripe_price_id").value.trim() || null,
+        };
+
+        // 3. Create
+        await adminCreateProduct(payload);
+
+        // 4. Done
+        window.location.assign("/admin/products/");
+      } catch (err) {
+        toast(err?.message || "Could not save the product.");
+        setBusy(false);
+      }
+    }
+
+    publishBtn.addEventListener("click", () => save(true));
+    saveBtn.addEventListener("click", () => save(false));
+  </script>
+
+</body>
+</html>

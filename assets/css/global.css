@@ -1,0 +1,304 @@
+/* ============================================================
+   A Case for Wisdom — Global Styles
+   Reset + base typography only. No layout, no components, no utilities
+   beyond .prose. Pulls every value from tokens.css.
+   Load order: tokens.css → global.css → components.css → page.css
+   ============================================================ */
+
+/* ---------- 1. Google Fonts ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=DM+Sans:wght@300;400;500;600&display=swap");
+
+/* ---------- 2. Reset ---------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- 3. Body ---------- */
+body {
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text);
+  background-color: var(--color-surface-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ---------- 4. Paper grain texture (body overlay) ---------- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--texture-grain);
+  background-repeat: repeat;
+  opacity: var(--texture-grain-opacity);
+  pointer-events: none;
+  z-index: var(--z-raised);
+  mix-blend-mode: multiply;
+}
+
+/* ---------- 5. Base images & media ---------- */
+img, picture, svg, video, canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+img, picture, video {
+  font-style: italic;             /* alt text reads as italic caption if missing */
+  background-repeat: no-repeat;
+  background-size: cover;
+  shape-margin: 1rem;
+}
+
+/* ---------- 6. Form element inheritance ---------- */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+textarea:not([rows]) { min-height: 10em; }
+
+/* ---------- 7. Typography — headings ---------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-regular);
+  color: var(--color-green);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-snug);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tightest);
+  font-weight: var(--weight-medium);
+}
+
+h2 { font-size: var(--text-3xl); line-height: var(--leading-snug); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); font-weight: var(--weight-medium); }
+
+h6 {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-text-muted);
+}
+
+/* ---------- 8. Typography — body text ---------- */
+p {
+  max-width: var(--measure-prose);
+  text-wrap: pretty;
+}
+
+p + p { margin-top: var(--space-4); }
+
+strong, b { font-weight: var(--weight-semibold); }
+em, i     { font-style: italic; }
+
+small {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+blockquote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-lg);
+  line-height: var(--leading-normal);
+  color: var(--color-green);
+  padding-left: var(--space-5);
+  border-left: 2px solid var(--color-gold);
+  max-width: var(--measure-prose);
+}
+
+figcaption {
+  margin-top: var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
+  line-height: var(--leading-normal);
+  max-width: var(--measure-prose);
+}
+
+hr {
+  border: 0;
+  border-top: var(--border-gold);
+  margin-block: var(--space-7);
+}
+
+/* ---------- 9. Links ---------- */
+a {
+  color: var(--color-green);
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  transition: var(--transition-colors),
+              background-size var(--duration-base) var(--ease-organic);
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--color-gold-hover);
+  background-image: linear-gradient(var(--color-gold), var(--color-gold));
+  background-size: 100% 2px;
+}
+
+/* ---------- 10. Focus ---------- */
+:focus { outline: none; }
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-xs);
+}
+
+/* ---------- 11. Selection ---------- */
+::selection {
+  background: var(--color-gold);
+  color: var(--color-surface-base);
+}
+
+::-moz-selection {
+  background: var(--color-gold);
+  color: var(--color-surface-base);
+}
+
+/* ---------- 12. Scrollbar — thin, warm-toned ---------- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gold-soft) var(--color-surface-base);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold-soft);
+  border: 2px solid var(--color-surface-base);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+/* ---------- 13. Prose — blog post body container ---------- */
+.prose {
+  max-width: var(--measure-prose);
+  font-size: var(--text-md);
+  line-height: var(--leading-loose);
+  color: var(--color-text);
+}
+
+.prose > * + * { margin-top: var(--space-5); }
+
+.prose h2 { margin-top: var(--space-9); font-size: var(--text-2xl); }
+.prose h3 { margin-top: var(--space-7); font-size: var(--text-xl); }
+.prose h4 { margin-top: var(--space-6); font-size: var(--text-lg); }
+
+.prose p { max-width: none; }
+
+.prose a {
+  color: var(--color-green);
+  background-size: 100% 1px;
+}
+.prose a:hover,
+.prose a:focus-visible {
+  color: var(--color-gold-hover);
+  background-size: 100% 2px;
+}
+
+.prose blockquote {
+  margin-block: var(--space-6);
+  font-size: var(--text-lg);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: var(--space-5);
+  max-width: var(--measure-prose);
+}
+
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+
+.prose li::marker { color: var(--color-gold); }
+.prose li + li { margin-top: var(--space-2); }
+
+.prose figure {
+  margin-block: var(--space-7);
+}
+
+.prose figure img {
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.prose img {
+  margin-block: var(--space-5);
+  border-radius: var(--radius-sm);
+}
+
+.prose hr {
+  margin-block: var(--space-8);
+  width: var(--space-7);
+  border-top: 1px solid var(--color-gold);
+}
+
+.prose code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  padding: 0.1em 0.35em;
+  background: var(--color-surface-mid);
+  border-radius: var(--radius-xs);
+}
+
+/* ---------- 14. Print ---------- */
+@media print {
+  body::before { display: none; }
+  body { background: white; color: black; }
+  a { color: black; background: none; }
+}

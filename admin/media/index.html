@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Media — A Case for Wisdom · Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+  <style>
+    /* Page-specific controls only — the shell + sidebar come from admin.css. */
+    .admin-main { max-width: 980px; }
+    .admin-section { border: 1px solid var(--color-rule); padding: var(--space-6); margin-bottom: var(--space-7); background: var(--admin-card-bg); }
+    .admin-section h2 { font-family: var(--font-body); font-size: var(--text-md); margin: 0 0 var(--space-2); color: var(--color-green); }
+    .admin-section p.note { font-family: var(--font-body); font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-5); }
+
+    .dropzone {
+      border: 1px dashed var(--color-border-soft);
+      padding: var(--space-6);
+      text-align: center;
+      background: var(--color-surface-base);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: border-color var(--duration-base) var(--ease-organic),
+                  background var(--duration-base) var(--ease-organic);
+    }
+    .dropzone:hover, .dropzone.is-drag { border-color: var(--color-gold); background: var(--color-surface-mid); color: var(--color-green); }
+    .dropzone input { display: none; }
+
+    .slide-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+    .slide-row {
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      gap: var(--space-4);
+      align-items: center;
+      padding: var(--space-3);
+      background: var(--color-surface-base);
+      border: 1px solid var(--color-border-hair);
+    }
+    .slide-row__thumb { width: 100px; height: 70px; object-fit: cover; display: block; background: var(--color-surface-mid); }
+    .slide-row__fields { display: grid; gap: var(--space-2); }
+    .slide-row__fields label {
+      font-family: var(--font-body); font-size: var(--text-xs);
+      letter-spacing: var(--tracking-wide); text-transform: uppercase;
+      color: var(--color-text-muted); display: block; margin-bottom: 2px;
+    }
+    .slide-row__fields input[type=text] {
+      width: 100%; padding: var(--space-2); border: 1px solid var(--color-border-hair);
+      background: var(--color-surface-base); font-family: var(--font-body); font-size: var(--text-sm);
+    }
+    .slide-row__actions { display: flex; flex-direction: column; gap: var(--space-2); align-items: stretch; }
+    .slide-row__actions label {
+      display: flex; gap: var(--space-2); align-items: center;
+      font-family: var(--font-body); font-size: var(--text-xs); color: var(--color-text);
+    }
+    .icon-btn {
+      background: none; border: 1px solid var(--color-border-soft);
+      padding: var(--space-2) var(--space-3); cursor: pointer;
+      font-family: var(--font-body); font-size: var(--text-xs); color: var(--color-text);
+    }
+    .icon-btn:hover { border-color: var(--color-gold); color: var(--color-green); }
+    .icon-btn--danger:hover { border-color: var(--color-error); color: var(--color-error); }
+
+    .interstitial-preview {
+      width: 200px; max-width: 100%; height: auto; display: block;
+      margin-top: var(--space-4); background: var(--color-surface-mid);
+    }
+    .meta { font-family: var(--font-body); font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-3); }
+
+    .toast { position: fixed; bottom: var(--space-6); right: var(--space-6); padding: var(--space-3) var(--space-5); background: var(--color-green); color: var(--color-text-invert); font-family: var(--font-body); font-size: var(--text-sm); opacity: 0; transition: opacity 0.25s ease; pointer-events: none; z-index: 1000; }
+    .toast.is-on { opacity: 1; }
+    .toast--err { background: var(--color-error); }
+    .btn-sm { padding: var(--space-2) var(--space-4); font-size: var(--text-xs); }
+  </style>
+</head>
+<body class="admin-app">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__brand">
+      <svg class="admin-sidebar__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+        <path d="M32 14 V50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1.25" fill="none"/>
+        <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1.25" fill="none"/>
+        <path d="M14 50 Q22 46 32 50 T 50 50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span class="admin-sidebar__brand-text">
+        <span class="admin-sidebar__name">A Case for Wisdom</span>
+        <span class="admin-sidebar__badge">Admin</span>
+      </span>
+    </div>
+
+    <nav class="admin-nav" aria-label="Admin">
+      <a class="admin-nav__link" href="/admin/"><span class="admin-nav__dot"></span>Dashboard</a>
+      <a class="admin-nav__link" href="/admin/posts/"><span class="admin-nav__dot"></span>Posts</a>
+      <a class="admin-nav__link" href="/admin/products/"><span class="admin-nav__dot"></span>Products</a>
+      <a class="admin-nav__link" href="/admin/admins/"><span class="admin-nav__dot"></span>Admins</a>
+      <a class="admin-nav__link is-active" href="/admin/media/" aria-current="page"><span class="admin-nav__dot"></span>Media</a>
+      <a class="admin-nav__link" href="/admin/settings/"><span class="admin-nav__dot"></span>Settings</a>
+    </nav>
+
+    <div class="admin-sidebar__foot">
+      <button type="button" class="admin-logout" id="logout-link">
+        <span class="admin-nav__dot"></span>Log out
+      </button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+      <div class="admin-pagehead">
+        <h1 class="admin-pagehead__title">Media</h1>
+      </div>
+
+      <section class="admin-section" aria-labelledby="slides-heading">
+        <h2 id="slides-heading">Hero slideshow</h2>
+        <p class="note">Images shown in the homepage hero. Crossfades every 5 seconds. Upload, reorder, hide, or remove.</p>
+
+        <label class="dropzone" id="slide-drop">
+          <input type="file" id="slide-file" accept="image/*" />
+          Drop an image here or click to choose
+        </label>
+
+        <p class="meta" id="slide-count">0 slides active</p>
+
+        <div class="slide-grid" id="slide-grid"></div>
+
+        <div style="display:flex; gap: var(--space-3); margin-top: var(--space-5);">
+          <button type="button" class="btn btn--primary btn-sm" id="save-order">Save order</button>
+        </div>
+      </section>
+
+      <section class="admin-section" aria-labelledby="interstitial-heading">
+        <h2 id="interstitial-heading">Interstitial image</h2>
+        <p class="note">A single full-bleed image shown between the journal and the scripture quote on the homepage.</p>
+
+        <label class="dropzone" id="int-drop">
+          <input type="file" id="int-file" accept="image/*" />
+          Drop an image here or click to choose
+        </label>
+
+        <img class="interstitial-preview" id="int-preview" alt="" hidden />
+        <div style="display:flex; gap: var(--space-3); margin-top: var(--space-4);">
+          <button type="button" class="icon-btn icon-btn--danger" id="int-remove" hidden>Remove image</button>
+        </div>
+      </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+    import {
+      getToken, clearToken, getSettings, adminUpdateSetting,
+      adminGetHeroSlides, adminCreateHeroSlide, adminUpdateHeroSlide,
+      adminDeleteHeroSlide, adminReorderHeroSlides, adminUploadFile,
+    } from "/assets/js/lib/api.js";
+
+    if (!getToken()) window.location.replace("/admin/login.html");
+
+    const toastEl = document.getElementById("toast");
+    function toast(msg, isErr = false) {
+      toastEl.textContent = msg;
+      toastEl.classList.toggle("toast--err", !!isErr);
+      toastEl.classList.add("is-on");
+      setTimeout(() => toastEl.classList.remove("is-on"), 2200);
+    }
+    function handle401(err) {
+      if (/^401\b/.test(err.message)) {
+        clearToken(); window.location.replace("/admin/login.html"); return true;
+      }
+      return false;
+    }
+
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault(); clearToken(); window.location.replace("/admin/login.html");
+    });
+
+    // ── Hero slides ───────────────────────────────────────────────
+    let slides = [];
+
+    function renderSlides() {
+      const grid = document.getElementById("slide-grid");
+      grid.innerHTML = "";
+      slides.forEach((s, idx) => {
+        const row = document.createElement("div");
+        row.className = "slide-row";
+        row.dataset.id = s.id;
+        row.innerHTML = `
+          <img class="slide-row__thumb" src="${s.image_url}" alt="" />
+          <div class="slide-row__fields">
+            <div>
+              <label>Caption</label>
+              <input type="text" data-field="caption" value="${(s.caption || "").replace(/"/g, "&quot;")}" placeholder="Optional caption shown over the image" />
+            </div>
+            <div>
+              <label>Alt text</label>
+              <input type="text" data-field="alt_text" value="${(s.alt_text || "").replace(/"/g, "&quot;")}" placeholder="Description for screen readers" />
+            </div>
+          </div>
+          <div class="slide-row__actions">
+            <label><input type="checkbox" data-field="active" ${s.active ? "checked" : ""} /> Active</label>
+            <button type="button" class="icon-btn" data-action="up" ${idx === 0 ? "disabled" : ""}>↑</button>
+            <button type="button" class="icon-btn" data-action="down" ${idx === slides.length - 1 ? "disabled" : ""}>↓</button>
+            <button type="button" class="icon-btn icon-btn--danger" data-action="delete">Delete</button>
+          </div>
+        `;
+        grid.appendChild(row);
+      });
+
+      grid.querySelectorAll(".slide-row").forEach((row) => {
+        const id = row.dataset.id;
+        row.querySelectorAll("input[data-field]").forEach((input) => {
+          input.addEventListener("change", async () => {
+            const field = input.dataset.field;
+            const value = input.type === "checkbox" ? input.checked : input.value;
+            try {
+              await adminUpdateHeroSlide(id, { [field]: value });
+              const i = slides.findIndex((x) => x.id === id);
+              if (i >= 0) slides[i] = { ...slides[i], [field]: value };
+              updateCount();
+              toast("Updated");
+            } catch (err) { if (!handle401(err)) toast(err.message, true); }
+          });
+        });
+        row.querySelector("[data-action='up']")?.addEventListener("click", () => {
+          const i = slides.findIndex((n) => n.id === id);
+          if (i > 0) { [slides[i - 1], slides[i]] = [slides[i], slides[i - 1]]; renderSlides(); }
+        });
+        row.querySelector("[data-action='down']")?.addEventListener("click", () => {
+          const i = slides.findIndex((n) => n.id === id);
+          if (i < slides.length - 1) { [slides[i + 1], slides[i]] = [slides[i], slides[i + 1]]; renderSlides(); }
+        });
+        row.querySelector("[data-action='delete']")?.addEventListener("click", async () => {
+          if (!confirm("Delete this slide?")) return;
+          try {
+            await adminDeleteHeroSlide(id);
+            slides = slides.filter((n) => n.id !== id);
+            renderSlides(); updateCount();
+            toast("Deleted");
+          } catch (err) { if (!handle401(err)) toast(err.message, true); }
+        });
+      });
+      updateCount();
+    }
+
+    function updateCount() {
+      const active = slides.filter((s) => s.active).length;
+      document.getElementById("slide-count").textContent =
+        `${active} slide${active === 1 ? "" : "s"} active · ${slides.length} total`;
+    }
+
+    async function uploadSlideFile(file) {
+      try {
+        const { url } = await adminUploadFile(file);
+        const created = await adminCreateHeroSlide({
+          image_url: url,
+          position: slides.length + 1,
+          active: true,
+        });
+        slides.push(created);
+        renderSlides();
+        toast("Slide added");
+      } catch (err) { if (!handle401(err)) toast(err.message, true); }
+    }
+
+    const dropZone = document.getElementById("slide-drop");
+    const fileInput = document.getElementById("slide-file");
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (file) uploadSlideFile(file);
+      fileInput.value = "";
+    });
+    ["dragenter", "dragover"].forEach((ev) => dropZone.addEventListener(ev, (e) => {
+      e.preventDefault(); dropZone.classList.add("is-drag");
+    }));
+    ["dragleave", "drop"].forEach((ev) => dropZone.addEventListener(ev, (e) => {
+      e.preventDefault(); dropZone.classList.remove("is-drag");
+    }));
+    dropZone.addEventListener("drop", (e) => {
+      const file = e.dataTransfer?.files?.[0];
+      if (file) uploadSlideFile(file);
+    });
+
+    document.getElementById("save-order").addEventListener("click", async () => {
+      try {
+        const ids = slides.map((s) => s.id).filter(Boolean);
+        slides = await adminReorderHeroSlides(ids);
+        renderSlides();
+        toast("Order saved");
+      } catch (err) { if (!handle401(err)) toast(err.message, true); }
+    });
+
+    // ── Interstitial ──────────────────────────────────────────────
+    const intDrop = document.getElementById("int-drop");
+    const intFile = document.getElementById("int-file");
+    const intPreview = document.getElementById("int-preview");
+    const intRemove = document.getElementById("int-remove");
+
+    function setInterstitial(url) {
+      if (url) {
+        intPreview.src = url;
+        intPreview.hidden = false;
+        intRemove.hidden = false;
+      } else {
+        intPreview.removeAttribute("src");
+        intPreview.hidden = true;
+        intRemove.hidden = true;
+      }
+    }
+
+    async function uploadInterstitial(file) {
+      try {
+        const { url } = await adminUploadFile(file);
+        await adminUpdateSetting("interstitial_image_url", url);
+        setInterstitial(url);
+        toast("Interstitial saved");
+      } catch (err) { if (!handle401(err)) toast(err.message, true); }
+    }
+
+    intFile.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (file) uploadInterstitial(file);
+      intFile.value = "";
+    });
+    ["dragenter", "dragover"].forEach((ev) => intDrop.addEventListener(ev, (e) => {
+      e.preventDefault(); intDrop.classList.add("is-drag");
+    }));
+    ["dragleave", "drop"].forEach((ev) => intDrop.addEventListener(ev, (e) => {
+      e.preventDefault(); intDrop.classList.remove("is-drag");
+    }));
+    intDrop.addEventListener("drop", (e) => {
+      const file = e.dataTransfer?.files?.[0];
+      if (file) uploadInterstitial(file);
+    });
+    intRemove.addEventListener("click", async () => {
+      if (!confirm("Remove the interstitial image?")) return;
+      try {
+        await adminUpdateSetting("interstitial_image_url", "");
+        setInterstitial("");
+        toast("Removed");
+      } catch (err) { if (!handle401(err)) toast(err.message, true); }
+    });
+
+    // ── Boot ──────────────────────────────────────────────────────
+    (async function load() {
+      try {
+        slides = await adminGetHeroSlides();
+        renderSlides();
+      } catch (err) { if (!handle401(err)) toast(err.message, true); }
+      try {
+        const s = await getSettings();
+        setInterstitial(s.interstitial_image_url || "");
+      } catch (err) { if (!handle401(err)) toast(err.message, true); }
+    })();
+  </script>
+</body>
+</html>

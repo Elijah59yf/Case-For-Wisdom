@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2B3E1E" />
+
+  <title>The Shop — A Case for Wisdom</title>
+  <meta name="description" content="Considered objects — prints, paper, and small things made slowly. All prices in CAD." />
+
+  <link rel="canonical" href="https://acaseforwisdom.com/shop/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="The Shop — A Case for Wisdom" />
+  <meta property="og:description" content="Considered objects — prints, paper, and small things made slowly." />
+  <meta property="og:image" content="/assets/images/og-image.jpg" />
+  <meta property="og:url" content="https://acaseforwisdom.com/shop/" />
+  <meta property="og:site_name" content="A Case for Wisdom" />
+  <meta property="og:locale" content="en_CA" />
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+  <link rel="apple-touch-icon" href="/assets/images/og-image.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+  <link rel="stylesheet" href="/assets/css/shop.css" />
+</head>
+
+<body class="shop-page">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a class="nav__brand" href="/" aria-label="A Case for Wisdom — Home">
+        <svg class="nav__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.55"/>
+          <path d="M32 14 V50" stroke="currentColor" stroke-width="1.25" fill="none"/>
+          <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 30 Q26 32 24 40" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 30 Q38 32 40 40" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M14 50 Q22 46 32 50 T 50 50" stroke="#B8953A" stroke-width="1.25" fill="none"/>
+        </svg>
+        <span class="nav__brand-text" data-site-name></span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary" data-nav-links></nav>
+
+      <div class="nav__actions">
+        <a class="nav__cart" href="/cart/" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M3 5h2l2.4 11.2A2 2 0 0 0 9.36 18h8.28a2 2 0 0 0 1.96-1.6L21 9H6"/>
+            <circle cx="10" cy="21" r="1.2"/>
+            <circle cx="18" cy="21" r="1.2"/>
+          </svg>
+          <span class="nav__cart-count" data-cart-count hidden>0</span>
+        </a>
+
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="mobile-drawer" data-nav-toggle>
+          <span class="sr-only">Open menu</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__drawer" id="mobile-drawer" data-open="false" aria-hidden="true">
+      <a class="nav__link" href="/cart/">Cart</a>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============================================================
+         PAGE HEADER
+         ============================================================ -->
+    <section class="shop-header" aria-labelledby="shop-heading">
+      <div class="shop-header__inner reveal">
+        <p class="shop-header__eyebrow">The Shop</p>
+        <h1 class="shop-title" id="shop-heading">Considered <em>objects</em>.</h1>
+        <p class="shop-subtitle" data-setting="shop_subtitle">
+          Prints, paper, and small things made slowly — kept few, chosen with care.
+        </p>
+      </div>
+    </section>
+    <hr class="shop-rule" aria-hidden="true" />
+
+    <!-- ============================================================
+         PRODUCT GRID
+         ============================================================ -->
+    <section class="shop-section" aria-live="polite">
+      <div class="shop-grid" data-shop-grid>
+        <!-- populated by script -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__brand" data-site-name></div>
+        <p class="footer__tagline" data-footer-tagline></p>
+      </div>
+
+      <div>
+        <p class="footer__heading">Read</p>
+        <div class="footer__list">
+          <a class="footer__link" href="/">Journal</a>
+          <a class="footer__link" href="/about.html">About</a>
+        </div>
+      </div>
+
+      <div>
+        <p class="footer__heading">Shop</p>
+        <div class="footer__list">
+          <a class="footer__link" href="/shop/">All products</a>
+          <a class="footer__link" href="/cart/">Cart</a>
+        </div>
+      </div>
+
+      <div>
+        <p class="footer__heading">Elsewhere</p>
+        <div class="footer__list">
+          <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+          <a class="footer__link" data-social="substack" href="#" rel="noopener" hidden>Substack</a>
+          <a class="footer__link" href="mailto:hello@acaseforwisdom.com">Write</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> <span data-site-name></span> — <span data-footer-copy></span></span>
+      <span>All prices in CAD.</span>
+    </div>
+  </footer>
+
+  <!-- Mobile drawer + reveal observer -->
+  <script type="module">
+    document.querySelector("[data-year]").textContent = new Date().getFullYear();
+
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const drawer = document.getElementById("mobile-drawer");
+    if (toggle && drawer) {
+      toggle.addEventListener("click", () => {
+        const open = drawer.getAttribute("data-open") === "true";
+        drawer.setAttribute("data-open", String(!open));
+        drawer.setAttribute("aria-hidden", String(open));
+        toggle.setAttribute("aria-expanded", String(!open));
+      });
+    }
+
+    window.__revealObserve = (root = document) => {
+      const reveals = root.querySelectorAll(".reveal:not(.is-visible)");
+      if ("IntersectionObserver" in window && reveals.length) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              io.unobserve(entry.target);
+            }
+          });
+        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
+        reveals.forEach((el) => io.observe(el));
+      } else {
+        reveals.forEach((el) => el.classList.add("is-visible"));
+      }
+    };
+    window.__revealObserve();
+  </script>
+
+  <!-- Shop logic -->
+  <script type="module">
+    import { loadNav, loadFooter, loadSettings } from "/assets/js/site.js";
+    import { getProducts } from "/assets/js/lib/api.js";
+    import { addToCart } from "/assets/js/cart.js";
+
+    const PRICE_FMT = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" });
+    const RADIUS = ["shop-item--radius-a", "shop-item--radius-b"];
+
+    const WATERMARK = `
+      <svg class="shop-item__watermark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M32 14 V50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M32 24 Q24 26 22 34" stroke="currentColor" stroke-width="1.25" fill="none"/>
+        <path d="M32 24 Q40 26 42 34" stroke="currentColor" stroke-width="1.25" fill="none"/>
+      </svg>`;
+
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    function card(product, index) {
+      const href = `/shop/product.html?id=${encodeURIComponent(product.id)}`;
+      const cover = product.images?.[0];
+      const radius = RADIUS[index % RADIUS.length];
+
+      const article = document.createElement("article");
+      article.className = `shop-item ${radius} reveal`;
+
+      const media = cover
+        ? `<div class="shop-item__media"><img src="${escapeHTML(cover)}" alt="" loading="lazy" /></div>`
+        : `<div class="shop-item__media shop-item__media--empty">${WATERMARK}</div>`;
+
+      article.innerHTML = `
+        <p class="shop-item__category">${escapeHTML(product.category || "Object")}</p>
+        <a class="shop-item__link" href="${href}">
+          ${media}
+          <h2 class="shop-item__name">${escapeHTML(product.name || "Untitled")}</h2>
+          <p class="shop-item__price">${PRICE_FMT.format(Number(product.price) || 0)}</p>
+        </a>
+        <div class="shop-item__foot">
+          <button type="button" class="btn btn--ghost" data-add>Add to cart</button>
+        </div>`;
+
+      article.querySelector("[data-add]").addEventListener("click", (e) => {
+        addToCart(product, 1);
+        const btn = e.currentTarget;
+        btn.textContent = "Added ✓";
+        btn.disabled = true;
+        setTimeout(() => { btn.textContent = "Add to cart"; btn.disabled = false; }, 1400);
+      });
+
+      return article;
+    }
+
+    function showEmpty(grid) {
+      grid.innerHTML = `
+        <div class="shop-empty reveal is-visible">
+          <p class="shop-empty__headline"><em>Objects coming soon.</em></p>
+          <p class="shop-empty__sub">A small shelf is being prepared.</p>
+        </div>`;
+    }
+
+    async function renderShop(grid) {
+      try {
+        const res = await getProducts();
+        const products = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+        if (!products.length) { showEmpty(grid); return; }
+        grid.replaceChildren(...products.map(card));
+        window.__revealObserve(grid);
+      } catch (err) {
+        console.error("[shop] failed to load products", err);
+        grid.innerHTML = `<p class="alert alert--error">The shelf is being tidied — please try again shortly.</p>`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadNav();
+      loadSettings();
+      loadFooter();
+      renderShop(document.querySelector("[data-shop-grid]"));
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2B3E1E" />
+
+  <title>Product — A Case for Wisdom</title>
+  <meta name="description" content="A considered object from A Case for Wisdom. All prices in CAD." />
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+  <link rel="apple-touch-icon" href="/assets/images/og-image.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+  <link rel="stylesheet" href="/assets/css/shop.css" />
+</head>
+
+<body class="shop-page">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a class="nav__brand" href="/" aria-label="A Case for Wisdom — Home">
+        <svg class="nav__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.55"/>
+          <path d="M32 14 V50" stroke="currentColor" stroke-width="1.25" fill="none"/>
+          <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M14 50 Q22 46 32 50 T 50 50" stroke="#B8953A" stroke-width="1.25" fill="none"/>
+        </svg>
+        <span class="nav__brand-text" data-site-name></span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary" data-nav-links></nav>
+
+      <div class="nav__actions">
+        <a class="nav__cart" href="/cart/" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M3 5h2l2.4 11.2A2 2 0 0 0 9.36 18h8.28a2 2 0 0 0 1.96-1.6L21 9H6"/>
+            <circle cx="10" cy="21" r="1.2"/>
+            <circle cx="18" cy="21" r="1.2"/>
+          </svg>
+          <span class="nav__cart-count" data-cart-count hidden>0</span>
+        </a>
+
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="mobile-drawer" data-nav-toggle>
+          <span class="sr-only">Open menu</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__drawer" id="mobile-drawer" data-open="false" aria-hidden="true">
+      <a class="nav__link" href="/cart/">Cart</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <a class="product-back" href="/shop/">← Back to Shop</a>
+
+    <article class="product" data-product hidden>
+      <!-- Gallery -->
+      <div class="product-gallery">
+        <div class="product-gallery__main" data-gallery-main></div>
+        <div class="product-gallery__thumbs" data-gallery-thumbs></div>
+      </div>
+
+      <!-- Info -->
+      <div class="product-info">
+        <p class="product-info__category" data-category></p>
+        <h1 class="product-info__name" data-name></h1>
+        <p class="product-info__price" data-price></p>
+        <p class="product-info__stock" data-stock></p>
+        <hr class="product-info__rule" aria-hidden="true" />
+        <div class="product-info__desc" data-desc></div>
+
+        <div class="product-buy" data-buy>
+          <div class="qty" aria-label="Quantity">
+            <button type="button" class="qty__btn" data-qty-dec aria-label="Decrease quantity">−</button>
+            <span class="qty__value" data-qty-value>1</span>
+            <button type="button" class="qty__btn" data-qty-inc aria-label="Increase quantity">+</button>
+          </div>
+          <button type="button" class="btn btn--primary" data-add>Add to cart</button>
+          <span class="product-added" data-added role="status" aria-live="polite">Added to cart ✓</span>
+        </div>
+      </div>
+    </article>
+
+    <p class="product-status" data-status>Loading…</p>
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__brand" data-site-name></div>
+        <p class="footer__tagline" data-footer-tagline></p>
+      </div>
+      <div>
+        <p class="footer__heading">Read</p>
+        <div class="footer__list">
+          <a class="footer__link" href="/">Journal</a>
+          <a class="footer__link" href="/about.html">About</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer__heading">Shop</p>
+        <div class="footer__list">
+          <a class="footer__link" href="/shop/">All products</a>
+          <a class="footer__link" href="/cart/">Cart</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer__heading">Elsewhere</p>
+        <div class="footer__list">
+          <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+          <a class="footer__link" data-social="substack" href="#" rel="noopener" hidden>Substack</a>
+          <a class="footer__link" href="mailto:hello@acaseforwisdom.com">Write</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> <span data-site-name></span> — <span data-footer-copy></span></span>
+      <span>All prices in CAD.</span>
+    </div>
+  </footer>
+
+  <!-- Mobile drawer -->
+  <script type="module">
+    document.querySelector("[data-year]").textContent = new Date().getFullYear();
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const drawer = document.getElementById("mobile-drawer");
+    if (toggle && drawer) {
+      toggle.addEventListener("click", () => {
+        const open = drawer.getAttribute("data-open") === "true";
+        drawer.setAttribute("data-open", String(!open));
+        drawer.setAttribute("aria-hidden", String(open));
+        toggle.setAttribute("aria-expanded", String(!open));
+      });
+    }
+  </script>
+
+  <!-- Product logic -->
+  <script type="module">
+    import { loadNav, loadFooter, loadSettings } from "/assets/js/site.js";
+    import { getProductById } from "/assets/js/lib/api.js";
+    import { addToCart } from "/assets/js/cart.js";
+
+    const PRICE_FMT = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" });
+
+    const WATERMARK = `
+      <svg class="product-gallery__watermark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M32 14 V50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M32 24 Q24 26 22 34" stroke="currentColor" stroke-width="1.25" fill="none"/>
+        <path d="M32 24 Q40 26 42 34" stroke="currentColor" stroke-width="1.25" fill="none"/>
+      </svg>`;
+
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    function descToHtml(text) {
+      if (!text) return `<p>A considered object, described soon.</p>`;
+      return String(text)
+        .split(/\n{2,}/)
+        .map((para) => `<p>${escapeHTML(para.trim()).replace(/\n/g, "<br/>")}</p>`)
+        .join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadNav();
+      loadSettings();
+      loadFooter();
+      init();
+    });
+
+    async function init() {
+      const statusEl = document.querySelector("[data-status]");
+      const articleEl = document.querySelector("[data-product]");
+      const id = new URLSearchParams(window.location.search).get("id");
+
+      if (!id) {
+        statusEl.textContent = "No product specified.";
+        return;
+      }
+
+      let product;
+      try {
+        product = await getProductById(id);
+      } catch (err) {
+        statusEl.textContent = err?.status === 404
+          ? "This object could not be found."
+          : "This object could not be loaded — please try again shortly.";
+        return;
+      }
+
+      document.title = `${product.name || "Product"} — A Case for Wisdom`;
+
+      // Category, name, price
+      document.querySelector("[data-category]").textContent = product.category || "Object";
+      document.querySelector("[data-name]").textContent = product.name || "Untitled";
+      document.querySelector("[data-price]").textContent = PRICE_FMT.format(Number(product.price) || 0);
+
+      // Stock note
+      const stockEl = document.querySelector("[data-stock]");
+      const inStock = !!product.in_stock;
+      if (inStock) {
+        stockEl.textContent = product.stock_count > 0
+          ? `${product.stock_count} in stock`
+          : "In stock";
+      } else {
+        stockEl.textContent = "Currently unavailable";
+        stockEl.classList.add("product-info__stock--out");
+      }
+
+      // Description
+      document.querySelector("[data-desc]").innerHTML = descToHtml(product.description);
+
+      // Gallery
+      const images = Array.isArray(product.images) ? product.images.filter(Boolean) : [];
+      const mainEl = document.querySelector("[data-gallery-main]");
+      const thumbsEl = document.querySelector("[data-gallery-thumbs]");
+
+      function setMain(url) {
+        if (url) {
+          mainEl.classList.remove("product-gallery__main--empty");
+          mainEl.innerHTML = `<img src="${escapeHTML(url)}" alt="${escapeHTML(product.name || "")}" />`;
+        } else {
+          mainEl.classList.add("product-gallery__main--empty");
+          mainEl.innerHTML = WATERMARK;
+        }
+      }
+
+      if (images.length) {
+        setMain(images[0]);
+        if (images.length > 1) {
+          images.forEach((url, i) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "product-gallery__thumb" + (i === 0 ? " is-active" : "");
+            btn.innerHTML = `<img src="${escapeHTML(url)}" alt="" />`;
+            btn.addEventListener("click", () => {
+              setMain(url);
+              thumbsEl.querySelectorAll(".product-gallery__thumb").forEach((t) => t.classList.remove("is-active"));
+              btn.classList.add("is-active");
+            });
+            thumbsEl.appendChild(btn);
+          });
+        }
+      } else {
+        setMain(null);
+      }
+
+      // Quantity selector
+      let qty = 1;
+      const qtyValue = document.querySelector("[data-qty-value]");
+      const decBtn = document.querySelector("[data-qty-dec]");
+      const incBtn = document.querySelector("[data-qty-inc]");
+      function renderQty() {
+        qtyValue.textContent = String(qty);
+        decBtn.disabled = qty <= 1;
+      }
+      decBtn.addEventListener("click", () => { if (qty > 1) { qty--; renderQty(); } });
+      incBtn.addEventListener("click", () => { qty++; renderQty(); });
+      renderQty();
+
+      // Add to cart
+      const addBtn = document.querySelector("[data-add]");
+      const addedEl = document.querySelector("[data-added]");
+      if (!inStock) {
+        addBtn.disabled = true;
+        addBtn.textContent = "Unavailable";
+      }
+      addBtn.addEventListener("click", () => {
+        if (!inStock) return;
+        addToCart(product, qty);
+        addedEl.classList.add("is-on");
+        setTimeout(() => addedEl.classList.remove("is-on"), 2000);
+      });
+
+      // Reveal
+      statusEl.hidden = true;
+      articleEl.hidden = false;
+    }
+  </script>
+
+</body>
+</html>

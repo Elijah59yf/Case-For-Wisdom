@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Sign in — A Case for Wisdom</title>
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+
+<body class="login-page">
+
+  <svg class="login-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.55"/>
+    <path d="M32 14 V50" stroke="currentColor" stroke-width="1.25" fill="none"/>
+    <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1" fill="none"/>
+    <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1" fill="none"/>
+    <path d="M32 30 Q26 32 24 40" stroke="currentColor" stroke-width="1" fill="none"/>
+    <path d="M32 30 Q38 32 40 40" stroke="currentColor" stroke-width="1" fill="none"/>
+    <path d="M14 50 Q22 46 32 50 T 50 50" stroke="#B8953A" stroke-width="1.25" fill="none"/>
+  </svg>
+
+  <main class="login-card">
+    <h1 class="login-heading">Sign in</h1>
+
+    <form id="login-form" novalidate>
+      <label class="field">
+        <span class="field__label">Email</span>
+        <input class="input" type="email" name="email" id="email"
+          autocomplete="username" required />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Password</span>
+        <input class="input" type="password" name="password" id="password"
+          autocomplete="current-password" required />
+      </label>
+
+      <button class="btn btn--primary btn--block" type="submit" id="submit-btn">
+        Sign in
+      </button>
+
+      <div class="login-error" id="login-error" role="alert" hidden></div>
+    </form>
+  </main>
+
+  <script type="module">
+    import { signIn, isAuthenticated } from "/assets/js/auth.js";
+
+    // Already logged in → straight to the dashboard. Works on both targets
+    // (VPS JWT or Supabase Auth session) via auth.js.
+    if (await isAuthenticated()) {
+      window.location.replace("/admin/");
+    }
+
+    const form    = document.getElementById("login-form");
+    const errorEl  = document.getElementById("login-error");
+    const submitBtn = document.getElementById("submit-btn");
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.hidden = false;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorEl.hidden = true;
+
+      const email    = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        showError("Invalid credentials");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Signing in…";
+
+      try {
+        // signIn() handles both targets: VPS JWT (POST /api/auth/login,
+        // stored as acfw_token) or Supabase Auth (session stored by the SDK).
+        await signIn(email, password);
+        window.location.replace("/admin/");
+      } catch (err) {
+        showError("Invalid credentials");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Sign in";
+      }
+    });
+  </script>
+
+</body>
+</html>

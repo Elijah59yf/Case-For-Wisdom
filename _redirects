@@ -1,0 +1,4 @@
+/blog    /          301
+/blog/   /          301
+/post    /post.html 200
+/*       /404.html  404

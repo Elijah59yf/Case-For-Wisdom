@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings — A Case for Wisdom · Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+  <style>
+    /* Page-specific controls only — the shell + sidebar come from admin.css. */
+    .admin-main { max-width: 880px; }
+    .admin-section { border: 1px solid var(--color-rule); padding: var(--space-6); margin-bottom: var(--space-7); background: var(--admin-card-bg); }
+    .admin-section h2 { font-family: var(--font-body); font-size: var(--text-md); margin: 0 0 var(--space-4); color: var(--color-green); }
+    .field { margin-bottom: var(--space-4); }
+    .field label { display: block; font-family: var(--font-body); font-size: var(--text-xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--color-text-muted); margin-bottom: var(--space-2); }
+    .field input, .field textarea { width: 100%; padding: var(--space-3); border: 1px solid var(--color-rule); background: var(--color-cream); font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-text); }
+    .field textarea { min-height: 4.5rem; resize: vertical; }
+    .field-row { display: flex; gap: var(--space-3); align-items: flex-end; }
+    .field-row .field { flex: 1; margin-bottom: 0; }
+    .btn-sm { padding: var(--space-2) var(--space-4); font-size: var(--text-xs); }
+    .nav-row { display: grid; grid-template-columns: 1fr 1.6fr auto auto auto auto; gap: var(--space-3); align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-rule); }
+    .nav-row input[type=text] { padding: var(--space-2); }
+    .nav-row .icon-btn { background: none; border: 1px solid var(--color-rule); padding: var(--space-2) var(--space-3); cursor: pointer; font-family: var(--font-body); font-size: var(--text-xs); color: var(--color-text); }
+    .nav-row .icon-btn:hover { border-color: var(--color-gold); color: var(--color-green); }
+    .subs-count { font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-text-muted); margin: 0 0 var(--space-4); }
+    .subs-count strong { color: var(--color-green); font-weight: var(--weight-semibold); }
+    .subs-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-rule); }
+    .subs-list li { display: flex; justify-content: space-between; gap: var(--space-4); align-items: baseline; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-rule); font-family: var(--font-body); font-size: var(--text-sm); }
+    .subs-list .subs-email { color: var(--color-text); word-break: break-all; }
+    .subs-list .subs-date { color: var(--color-text-muted); font-size: var(--text-xs); white-space: nowrap; }
+    .subs-empty { font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-text-muted); font-style: italic; margin: 0; }
+    .toast { position: fixed; bottom: var(--space-6); right: var(--space-6); padding: var(--space-3) var(--space-5); background: var(--color-green); color: var(--color-cream); font-family: var(--font-body); font-size: var(--text-sm); opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
+    .toast.is-on { opacity: 1; }
+    .toast--err { background: #8a1a1a; }
+  </style>
+</head>
+<body class="admin-app">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__brand">
+      <svg class="admin-sidebar__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+        <path d="M32 14 V50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1.25" fill="none"/>
+        <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1.25" fill="none"/>
+        <path d="M14 50 Q22 46 32 50 T 50 50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span class="admin-sidebar__brand-text">
+        <span class="admin-sidebar__name">A Case for Wisdom</span>
+        <span class="admin-sidebar__badge">Admin</span>
+      </span>
+    </div>
+
+    <nav class="admin-nav" aria-label="Admin">
+      <a class="admin-nav__link" href="/admin/"><span class="admin-nav__dot"></span>Dashboard</a>
+      <a class="admin-nav__link" href="/admin/posts/"><span class="admin-nav__dot"></span>Posts</a>
+      <a class="admin-nav__link" href="/admin/products/"><span class="admin-nav__dot"></span>Products</a>
+      <a class="admin-nav__link" href="/admin/admins/"><span class="admin-nav__dot"></span>Admins</a>
+      <a class="admin-nav__link" href="/admin/media/"><span class="admin-nav__dot"></span>Media</a>
+      <a class="admin-nav__link is-active" href="/admin/settings/" aria-current="page"><span class="admin-nav__dot"></span>Settings</a>
+    </nav>
+
+    <div class="admin-sidebar__foot">
+      <button type="button" class="admin-logout" id="logout-link">
+        <span class="admin-nav__dot"></span>Log out
+      </button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+      <div class="admin-pagehead">
+        <h1 class="admin-pagehead__title">Settings</h1>
+      </div>
+
+      <section class="admin-section" aria-labelledby="settings-heading">
+        <h2 id="settings-heading">Site settings</h2>
+        <form id="settings-form" autocomplete="off"></form>
+      </section>
+
+      <section class="admin-section" aria-labelledby="nav-heading">
+        <h2 id="nav-heading">Navigation</h2>
+        <div id="nav-list"></div>
+        <div style="display: flex; gap: var(--space-3); margin-top: var(--space-5);">
+          <button class="btn btn--ghost btn-sm" id="add-nav">+ Add nav item</button>
+          <button class="btn btn--primary btn-sm" id="save-order">Save order</button>
+        </div>
+      </section>
+
+      <section class="admin-section" aria-labelledby="subs-heading">
+        <h2 id="subs-heading">Subscribers</h2>
+        <p class="subs-count" id="subs-count">Loading…</p>
+        <ul class="subs-list" id="subs-list"></ul>
+      </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+    import {
+      getToken, clearToken,
+      getSettings, adminUpdateSetting,
+      adminGetNavItems, adminCreateNavItem, adminUpdateNavItem,
+      adminDeleteNavItem, adminReorderNavItems,
+      adminGetSubscribers,
+    } from "/assets/js/lib/api.js";
+
+    if (!getToken()) {
+      window.location.replace("/admin/login.html");
+    }
+
+    const toastEl = document.getElementById("toast");
+    function toast(msg, isErr = false) {
+      toastEl.textContent = msg;
+      toastEl.classList.toggle("toast--err", !!isErr);
+      toastEl.classList.add("is-on");
+      setTimeout(() => toastEl.classList.remove("is-on"), 2200);
+    }
+
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault(); clearToken(); window.location.replace("/admin/login.html");
+    });
+
+    // ── Settings form ─────────────────────────────────────────────
+    const SETTING_KEYS = [
+      ["site_name",     "Site name",     "input"],
+      ["tagline",       "Tagline",       "input"],
+      ["hero_headline", "Hero headline", "textarea"],
+      ["hero_subtext",  "Hero subtext",  "textarea"],
+      ["footer_copy",   "Footer copy",   "input"],
+      ["instagram_url", "Instagram URL", "input"],
+      ["substack_url",  "Substack URL",  "input"],
+      ["interstitial_image_url", "Interstitial image URL", "input"],
+    ];
+
+    async function renderSettings() {
+      const form = document.getElementById("settings-form");
+      const values = await getSettings();
+      form.innerHTML = "";
+      for (const [key, label, kind] of SETTING_KEYS) {
+        const wrap = document.createElement("div");
+        wrap.className = "field-row";
+        wrap.innerHTML = `
+          <div class="field">
+            <label for="f-${key}">${label}</label>
+            ${kind === "textarea"
+              ? `<textarea id="f-${key}" name="${key}"></textarea>`
+              : `<input type="text" id="f-${key}" name="${key}" />`}
+          </div>
+          <button type="button" class="btn btn--ghost btn-sm" data-save="${key}">Save</button>
+        `;
+        form.appendChild(wrap);
+        const input = wrap.querySelector(`#f-${key}`);
+        input.value = values[key] ?? "";
+      }
+      form.querySelectorAll("[data-save]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const key = btn.dataset.save;
+          const input = form.querySelector(`#f-${key}`);
+          try {
+            await adminUpdateSetting(key, input.value);
+            toast(`Saved ${key}`);
+          } catch (err) { toast(err.message, true); }
+        });
+      });
+    }
+
+    // ── Nav manager ───────────────────────────────────────────────
+    let navItems = [];
+
+    function renderNav() {
+      const list = document.getElementById("nav-list");
+      list.innerHTML = "";
+      navItems.forEach((item, idx) => {
+        const row = document.createElement("div");
+        row.className = "nav-row";
+        row.dataset.id = item.id || "";
+        row.innerHTML = `
+          <input type="text" data-field="label" value="${(item.label || "").replace(/"/g, "&quot;")}" placeholder="Label" />
+          <input type="text" data-field="url" value="${(item.url || "").replace(/"/g, "&quot;")}" placeholder="/path" />
+          <label style="display:flex; gap: var(--space-2); align-items:center; font-size: var(--text-xs);">
+            <input type="checkbox" data-field="visible" ${item.visible ? "checked" : ""} /> visible
+          </label>
+          <button type="button" class="icon-btn" data-action="up" ${idx === 0 ? "disabled" : ""}>↑</button>
+          <button type="button" class="icon-btn" data-action="down" ${idx === navItems.length - 1 ? "disabled" : ""}>↓</button>
+          <button type="button" class="icon-btn" data-action="delete">Delete</button>
+        `;
+        list.appendChild(row);
+      });
+      list.querySelectorAll(".nav-row").forEach((row) => {
+        const id = row.dataset.id;
+        row.querySelectorAll("input[data-field]").forEach((input) => {
+          input.addEventListener("change", async () => {
+            const field = input.dataset.field;
+            const value = input.type === "checkbox" ? input.checked : input.value;
+            if (!id) return;
+            try {
+              await adminUpdateNavItem(id, { [field]: value });
+              toast("Updated");
+            } catch (err) { toast(err.message, true); }
+          });
+        });
+        row.querySelector("[data-action='up']")?.addEventListener("click", () => {
+          const i = navItems.findIndex((n) => n.id === id);
+          if (i > 0) { [navItems[i - 1], navItems[i]] = [navItems[i], navItems[i - 1]]; renderNav(); }
+        });
+        row.querySelector("[data-action='down']")?.addEventListener("click", () => {
+          const i = navItems.findIndex((n) => n.id === id);
+          if (i < navItems.length - 1) { [navItems[i + 1], navItems[i]] = [navItems[i], navItems[i + 1]]; renderNav(); }
+        });
+        row.querySelector("[data-action='delete']")?.addEventListener("click", async () => {
+          if (!id) {
+            navItems = navItems.filter((n) => n.id !== id);
+            renderNav();
+            return;
+          }
+          if (!confirm("Delete this nav item?")) return;
+          try {
+            await adminDeleteNavItem(id);
+            navItems = navItems.filter((n) => n.id !== id);
+            renderNav();
+            toast("Deleted");
+          } catch (err) { toast(err.message, true); }
+        });
+      });
+    }
+
+    document.getElementById("add-nav").addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const created = await adminCreateNavItem({
+          label: "New item",
+          url: "/",
+          position: navItems.length + 1,
+          visible: true,
+        });
+        navItems.push(created);
+        renderNav();
+      } catch (err) { toast(err.message, true); }
+    });
+
+    document.getElementById("save-order").addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const ids = navItems.map((n) => n.id).filter(Boolean);
+        navItems = await adminReorderNavItems(ids);
+        renderNav();
+        toast("Order saved");
+      } catch (err) { toast(err.message, true); }
+    });
+
+    // ── Subscribers ───────────────────────────────────────────────
+    const SUBS_DATE_FMT = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric", month: "short", day: "numeric",
+    });
+
+    async function renderSubscribers() {
+      const countEl = document.getElementById("subs-count");
+      const listEl = document.getElementById("subs-list");
+      const subs = await adminGetSubscribers();
+      listEl.innerHTML = "";
+
+      const n = subs.length;
+      countEl.innerHTML = `<strong>${n}</strong> ${n === 1 ? "subscriber" : "subscribers"}`;
+
+      if (!n) {
+        listEl.innerHTML = `<li><p class="subs-empty">No subscribers yet.</p></li>`;
+        return;
+      }
+
+      for (const s of subs) {
+        const li = document.createElement("li");
+        const email = document.createElement("span");
+        email.className = "subs-email";
+        email.textContent = s.email || "";
+        const date = document.createElement("span");
+        date.className = "subs-date";
+        date.textContent = s.created_at ? SUBS_DATE_FMT.format(new Date(s.created_at)) : "";
+        li.append(email, date);
+        listEl.appendChild(li);
+      }
+    }
+
+    async function loadAll() {
+      try {
+        navItems = await adminGetNavItems();
+        renderNav();
+      } catch (err) {
+        if (/401/.test(err.message)) {
+          clearToken(); window.location.replace("/admin/login.html"); return;
+        }
+        toast(err.message, true);
+      }
+      try { await renderSettings(); }
+      catch (err) { toast(err.message, true); }
+      try { await renderSubscribers(); }
+      catch (err) {
+        document.getElementById("subs-count").textContent = "Couldn't load subscribers.";
+        toast(err.message, true);
+      }
+    }
+
+    loadAll();
+  </script>
+</body>
+</html>

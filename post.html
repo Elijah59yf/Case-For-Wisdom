@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2B3E1E" />
+
+  <title>Loading… — A Case for Wisdom</title>
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="A Case for Wisdom" />
+  <meta property="og:description" content="An essay from the journal of A Case for Wisdom." />
+  <meta property="og:image" content="/assets/images/og-image.jpg" />
+  <meta property="og:site_name" content="A Case for Wisdom" />
+  <meta property="og:locale" content="en_CA" />
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+  <link rel="apple-touch-icon" href="/assets/images/og-image.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+  <link rel="stylesheet" href="/assets/css/blog.css" />
+
+  <!-- Page-scoped components (share buttons, related posts, newsletter).
+       These reuse the design tokens only and add no new global CSS. -->
+  <style>
+    .post-share {
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .share-btn {
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-wide);
+      color: var(--color-green);
+      background: transparent;
+      border: 1px solid var(--color-border-soft);
+      padding: var(--space-2) var(--space-4);
+      cursor: pointer;
+      transition: var(--transition-colors);
+    }
+    .share-btn:hover { border-color: var(--color-gold); color: var(--color-gold-hover); }
+    .share-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .post-share__status {
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    .related {
+      max-width: var(--container-prose);
+      margin: 0 auto;
+      padding: 0 var(--space-section-x) var(--space-12);
+    }
+    .related__heading {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: var(--text-2xl);
+      color: var(--color-green);
+      margin: 0 0 var(--space-6);
+    }
+    .related__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+    .related-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border-top: var(--border-hair);
+      padding-top: var(--space-4);
+    }
+    .related-card__category {
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: var(--color-gold-hover);
+      margin: 0 0 var(--space-2);
+    }
+    .related-card__title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      line-height: var(--leading-snug);
+      color: var(--color-green);
+      margin: 0 0 var(--space-2);
+      transition: var(--transition-colors);
+    }
+    .related-card:hover .related-card__title { color: var(--color-gold-hover); }
+    .related-card__date {
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    @media (min-width: 48rem) {
+      .related__grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .newsletter {
+      background-color: var(--color-surface-base);
+      border-top: var(--border-hair);
+      padding: var(--space-11) var(--space-section-x);
+    }
+    .newsletter__inner {
+      max-width: var(--container-prose);
+      margin-inline: auto;
+      text-align: center;
+    }
+    .newsletter__heading {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: var(--text-3xl);
+      color: var(--color-green);
+      margin: 0 0 var(--space-3);
+    }
+    .newsletter__sub {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--color-text-muted);
+      margin: 0 0 var(--space-6);
+    }
+    .newsletter__form {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .newsletter__input {
+      flex: 1 1 18rem;
+      max-width: 22rem;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--color-text);
+      background: var(--color-surface-card);
+      border: var(--border-hair);
+      padding: var(--space-3) var(--space-4);
+    }
+    .newsletter__input:focus { outline: none; border-color: var(--color-gold); }
+    .newsletter__btn {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      letter-spacing: var(--tracking-wide);
+      color: var(--color-green);
+      background: transparent;
+      border: 1px solid var(--color-gold);
+      padding: var(--space-3) var(--space-6);
+      cursor: pointer;
+      transition: var(--transition-colors);
+    }
+    .newsletter__btn:hover {
+      background: var(--color-green);
+      color: var(--color-text-invert);
+      border-color: var(--color-green);
+    }
+    .newsletter__btn:disabled { opacity: 0.5; cursor: default; }
+    .newsletter__msg {
+      margin: var(--space-5) 0 0;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: var(--text-lg);
+      color: var(--color-green);
+      min-height: 1.4em;
+    }
+    .newsletter__msg--err { color: var(--color-error); }
+  </style>
+</head>
+
+<body>
+
+  <a class="skip-link" href="#post-main">Skip to content</a>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a class="nav__brand" href="/" aria-label="A Case for Wisdom — Home">
+        <svg class="nav__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.55"/>
+          <path d="M32 14 V50" stroke="currentColor" stroke-width="1.25" fill="none"/>
+          <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 30 Q26 32 24 40" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 30 Q38 32 40 40" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M14 50 Q22 46 32 50 T 50 50" stroke="#B8953A" stroke-width="1.25" fill="none"/>
+        </svg>
+        <span class="nav__brand-text" data-site-name></span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary" data-nav-links></nav>
+
+      <div class="nav__actions">
+        <a class="nav__cart" href="/cart/" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M3 5h2l2.4 11.2A2 2 0 0 0 9.36 18h8.28a2 2 0 0 0 1.96-1.6L21 9H6"/>
+            <circle cx="10" cy="21" r="1.2"/>
+            <circle cx="18" cy="21" r="1.2"/>
+          </svg>
+          <span class="nav__cart-count" data-cart-count hidden>0</span>
+        </a>
+
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="mobile-drawer" data-nav-toggle>
+          <span class="sr-only">Open menu</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__drawer" id="mobile-drawer" data-open="false" aria-hidden="true">
+      <a class="nav__link" href="/cart/">Cart</a>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       POST
+       ============================================================ -->
+  <main id="post-main">
+    <div class="post-loading" data-loading aria-hidden="true">
+      <div class="skeleton skeleton-line skeleton-line--sm" style="margin-bottom: var(--space-4);"></div>
+      <div class="skeleton skeleton-line skeleton-line--title" style="height: 2.4rem; width: 70%; margin-bottom: var(--space-3);"></div>
+      <div class="skeleton skeleton-line skeleton-line--wide" style="margin-bottom: var(--space-6);"></div>
+      <div class="skeleton skeleton-card__media" style="margin-bottom: var(--space-6);"></div>
+      <div class="skeleton skeleton-line skeleton-line--wide" style="margin-bottom: var(--space-3);"></div>
+      <div class="skeleton skeleton-line skeleton-line--wide" style="margin-bottom: var(--space-3);"></div>
+      <div class="skeleton skeleton-line skeleton-line--mid"></div>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       NEWSLETTER
+       ============================================================ -->
+  <section class="newsletter" aria-labelledby="newsletter-heading">
+    <div class="newsletter__inner">
+      <h2 class="newsletter__heading" id="newsletter-heading">Stay close to the source.</h2>
+      <p class="newsletter__sub">New essays, delivered slowly.</p>
+      <form class="newsletter__form" data-newsletter novalidate>
+        <label class="sr-only" for="newsletter-email">Email address</label>
+        <input
+          type="email"
+          id="newsletter-email"
+          class="newsletter__input"
+          name="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+          data-newsletter-input
+        />
+        <button type="submit" class="newsletter__btn" data-newsletter-btn>Subscribe</button>
+      </form>
+      <p class="newsletter__msg" data-newsletter-msg role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__brand" data-site-name></div>
+        <p class="footer__tagline" data-footer-tagline></p>
+      </div>
+
+      <div>
+        <p class="footer__heading">Read</p>
+        <div class="footer__list">
+          <a class="footer__link" href="/">Journal</a>
+          <a class="footer__link" href="/about.html">About</a>
+        </div>
+      </div>
+
+      <div>
+        <p class="footer__heading">Shop</p>
+        <div class="footer__list">
+          <a class="footer__link" href="/shop/">All products</a>
+          <a class="footer__link" href="/cart/">Cart</a>
+        </div>
+      </div>
+
+      <div>
+        <p class="footer__heading">Elsewhere</p>
+        <div class="footer__list">
+          <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+          <a class="footer__link" data-social="substack" href="#" rel="noopener" hidden>Substack</a>
+          <a class="footer__link" href="mailto:hello@acaseforwisdom.com">Write</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> <span data-site-name></span> — <span data-footer-copy></span></span>
+      <span>All prices in CAD.</span>
+    </div>
+  </footer>
+
+  <!-- Mobile drawer toggle -->
+  <script type="module">
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const drawer = document.getElementById("mobile-drawer");
+    if (toggle && drawer) {
+      toggle.addEventListener("click", () => {
+        const open = drawer.getAttribute("data-open") === "true";
+        drawer.setAttribute("data-open", String(!open));
+        drawer.setAttribute("aria-hidden", String(open));
+        toggle.setAttribute("aria-expanded", String(!open));
+      });
+    }
+  </script>
+
+  <!-- Single post logic -->
+  <script type="module">
+    import { loadNav, loadFooter } from "/assets/js/site.js";
+    import { getPostBySlug, getPosts, subscribe, ApiError } from "/assets/js/lib/api.js";
+
+    const DATE_FMT = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric", month: "long", day: "numeric",
+    });
+
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    function readTime(post) {
+      if (Number.isFinite(post.read_time)) return post.read_time;
+      const text = (post.body || "").replace(/<[^>]*>/g, " ");
+      const words = text.split(/\s+/).filter(Boolean).length;
+      return Math.max(1, Math.round(words / 220));
+    }
+
+    function renderPost(post) {
+      const category = post.category || "Essay";
+      const date = post.created_at ? DATE_FMT.format(new Date(post.created_at)) : "";
+
+      const cover = post.cover_url
+        ? `<img class="post-cover" src="${escapeHTML(post.cover_url)}" alt="Cover image for “${escapeHTML(post.title)}”" decoding="async" />`
+        : "";
+
+      const main = document.getElementById("post-main");
+      main.innerHTML = `
+        <article class="post">
+          <header class="post-header">
+            <p class="post-category eyebrow">${escapeHTML(category)}</p>
+            <h1 class="post-title">${escapeHTML(post.title)}</h1>
+            ${post.excerpt ? `<p class="post-lead">${escapeHTML(post.excerpt)}</p>` : ""}
+            <div class="post-meta">
+              ${date ? `<span>${escapeHTML(date)}</span>` : ""}
+              ${date ? `<span aria-hidden="true">·</span>` : ""}
+              <span>${readTime(post)} min read</span>
+            </div>
+          </header>
+          <hr class="rule-gold" />
+          ${cover}
+          <div class="post-body prose"></div>
+          <footer class="post-footer">
+            <a href="/" class="post-back">← Back to Journal</a>
+            <div class="post-share">
+              <button type="button" class="share-btn" data-share="copy">Copy link</button>
+              <button type="button" class="share-btn" data-share="instagram"
+                title="Link copied — paste in your Instagram story or bio">Share on Instagram</button>
+              <span class="post-share__status" data-share-status></span>
+            </div>
+          </footer>
+        </article>
+      `;
+      // Body is stored as HTML from Quill — inject as innerHTML.
+      main.querySelector(".post-body").innerHTML = post.body || "";
+
+      wireShare(main);
+
+      document.title = `${post.title} — A Case for Wisdom`;
+    }
+
+    // Copy link / share buttons. Instagram has no web share API, so it just
+    // copies the link and hints where to paste it.
+    function wireShare(root) {
+      const status = root.querySelector("[data-share-status]");
+      let timer;
+      const flash = (text) => {
+        if (!status) return;
+        status.textContent = text;
+        clearTimeout(timer);
+        timer = setTimeout(() => { status.textContent = ""; }, text.length > 20 ? 4000 : 2000);
+      };
+      const copyLink = async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          return true;
+        } catch {
+          return false;
+        }
+      };
+      root.querySelector('[data-share="copy"]')?.addEventListener("click", async () => {
+        flash(await copyLink() ? "Copied!" : "Press Ctrl/Cmd+C to copy.");
+      });
+      root.querySelector('[data-share="instagram"]')?.addEventListener("click", async () => {
+        const ok = await copyLink();
+        flash(ok
+          ? "Link copied — paste in your Instagram story or bio."
+          : "Press Ctrl/Cmd+C to copy the link.");
+      });
+    }
+
+    // ── Related posts ───────────────────────────────────────────────
+    function relatedCard(post) {
+      const category = post.category || "Essay";
+      const date = post.created_at ? DATE_FMT.format(new Date(post.created_at)) : "";
+      return `
+        <a class="related-card" href="/post.html?slug=${encodeURIComponent(post.slug)}">
+          <p class="related-card__category">${escapeHTML(category)}</p>
+          <h3 class="related-card__title">${escapeHTML(post.title)}</h3>
+          ${date ? `<p class="related-card__date">${escapeHTML(date)}</p>` : ""}
+        </a>
+      `;
+    }
+
+    async function renderRelated(post) {
+      if (!post.category) return;
+      let related;
+      try {
+        const result = await getPosts({ category: post.category, limit: 4 });
+        related = Array.isArray(result?.data) ? result.data : Array.isArray(result) ? result : [];
+      } catch (err) {
+        console.error("[post] failed to fetch related posts", err);
+        return; // related posts are non-essential — fail quietly
+      }
+
+      const others = related.filter((p) => p.slug !== post.slug).slice(0, 3);
+      if (!others.length) return;
+
+      const section = document.createElement("section");
+      section.className = "related";
+      section.setAttribute("aria-labelledby", "related-heading");
+      section.innerHTML = `
+        <h2 class="related__heading" id="related-heading">More from the journal</h2>
+        <div class="related__grid">${others.map(relatedCard).join("")}</div>
+      `;
+      document.getElementById("post-main").appendChild(section);
+    }
+
+    function renderMessage({ headline, sub, showRetry }) {
+      const main = document.getElementById("post-main");
+      main.innerHTML = `
+        <div class="posts-empty" role="alert">
+          <p class="posts-empty__headline">${escapeHTML(headline)}</p>
+          <p class="posts-empty__sub">${escapeHTML(sub)}</p>
+          <div class="post-footer" style="margin-top: var(--space-5);">
+            ${showRetry ? `<button type="button" class="post-back" data-retry>Try again</button>` : ""}
+            <a href="/" class="post-back">← Back to Journal</a>
+          </div>
+        </div>
+      `;
+      const retry = main.querySelector("[data-retry]");
+      if (retry) retry.addEventListener("click", () => load());
+    }
+
+    let slug;
+    async function load() {
+      // Cancel the fetch if the reader navigates away before it resolves.
+      const controller = new AbortController();
+      window.addEventListener("pagehide", () => controller.abort(), { once: true });
+
+      let post;
+      try {
+        post = await getPostBySlug(slug, { signal: controller.signal });
+      } catch (err) {
+        if (err?.name === "AbortError") return; // navigated away
+        // A genuine 404 means the essay doesn't exist; anything else is a
+        // transient connectivity/server problem we can retry.
+        if (err instanceof ApiError && err.status === 404) {
+          renderMessage({
+            headline: "This essay couldn't be found.",
+            sub: "It may have been moved or unpublished.",
+            showRetry: false,
+          });
+          return;
+        }
+        console.error("[post] failed to fetch post", err);
+        renderMessage({
+          headline: "We couldn't load this essay.",
+          sub: "There was a problem reaching the journal. Please try again in a moment.",
+          showRetry: true,
+        });
+        return;
+      }
+
+      if (!post || !post.title) {
+        renderMessage({
+          headline: "This essay couldn't be found.",
+          sub: "It may have been moved or unpublished.",
+          showRetry: false,
+        });
+        return;
+      }
+
+      renderPost(post);
+      renderRelated(post);
+    }
+
+    // ── Newsletter signup ───────────────────────────────────────────
+    function wireNewsletter() {
+      const form = document.querySelector("[data-newsletter]");
+      if (!form) return;
+      const input = form.querySelector("[data-newsletter-input]");
+      const btn = form.querySelector("[data-newsletter-btn]");
+      const msg = document.querySelector("[data-newsletter-msg]");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = (input.value || "").trim();
+        msg.classList.remove("newsletter__msg--err");
+        if (!email || !input.checkValidity()) {
+          msg.textContent = "Please enter a valid email address.";
+          msg.classList.add("newsletter__msg--err");
+          return;
+        }
+        btn.disabled = true;
+        try {
+          await subscribe(email);
+          form.hidden = true;
+          msg.textContent = "Thank you. Watch your inbox.";
+        } catch (err) {
+          btn.disabled = false;
+          msg.textContent = "Something went wrong — please try again in a moment.";
+          msg.classList.add("newsletter__msg--err");
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      loadNav();
+      loadFooter();
+      wireNewsletter();
+
+      slug = new URLSearchParams(window.location.search).get("slug");
+      if (!slug) {
+        window.location.href = "/";
+        return;
+      }
+
+      load();
+    });
+  </script>
+
+</body>
+</html>

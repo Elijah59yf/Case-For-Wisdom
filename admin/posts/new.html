@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>New post — A Case for Wisdom</title>
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" />
+
+  <!-- Quill rich text editor (CDN) -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+
+<body>
+
+  <header class="admin-topbar">
+    <h1 class="admin-topbar__title">New post</h1>
+    <div class="admin-topbar__actions">
+      <a class="btn btn--ghost" href="/admin/posts/">Cancel</a>
+    </div>
+  </header>
+
+  <main class="editor">
+
+    <!-- Left: title + body editor -->
+    <div class="editor__main">
+      <input class="editor__title" type="text" id="title"
+        placeholder="Post title" autocomplete="off" />
+      <div class="editor__quill" id="editor"></div>
+    </div>
+
+    <!-- Right: metadata + actions -->
+    <aside class="editor__sidebar">
+      <h2 class="editor__sidebar-heading">Post details</h2>
+
+      <label class="field">
+        <span class="field__label">Status</span>
+        <select class="select" id="status">
+          <option value="draft" selected>Draft</option>
+          <option value="published">Published</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span class="field__label">Category</span>
+        <select class="select" id="category">
+          <option value="Essay">Essay</option>
+          <option value="Reflection">Reflection</option>
+          <option value="Letter">Letter</option>
+          <option value="Study">Study</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span class="field__label">Excerpt</span>
+        <textarea class="textarea" id="excerpt" rows="5"></textarea>
+      </label>
+
+      <div class="field">
+        <span class="field__label">Cover image</span>
+        <input class="cover-upload__input" type="file" id="cover" accept="image/*" />
+        <img class="cover-preview" id="cover-preview" alt="Cover preview" hidden />
+      </div>
+
+      <p class="read-meta" id="read-meta">0 words · ~1 min read</p>
+
+      <div class="editor__actions">
+        <button class="btn btn--primary" type="button" id="publish-btn">Publish</button>
+        <button class="btn btn--ghost" type="button" id="draft-btn">Save Draft</button>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Quill -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+  <script type="module">
+    import { adminCreatePost, adminUploadFile } from "/assets/js/lib/api.js";
+    import { isAuthenticated } from "/assets/js/auth.js";
+
+    // ── Auth guard ──────────────────────────────────────────────────
+    if (!(await isAuthenticated())) {
+      window.location.replace("/admin/login.html");
+    }
+
+    // ── Quill setup ─────────────────────────────────────────────────
+    const quill = new Quill("#editor", {
+      theme: "snow",
+      placeholder: "Begin the piece…",
+      modules: {
+        toolbar: [
+          [{ header: [2, 3, false] }],
+          ["bold", "italic", "underline"],
+          ["blockquote"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["link"],
+        ],
+      },
+    });
+
+    // ── Live word count / read time ─────────────────────────────────
+    const readMeta = document.getElementById("read-meta");
+    function updateReadMeta() {
+      const text = quill.getText().trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      const minutes = Math.max(1, Math.round(words / 200));
+      readMeta.textContent = `${words} word${words === 1 ? "" : "s"} · ~${minutes} min read`;
+    }
+    quill.on("text-change", updateReadMeta);
+    updateReadMeta();
+
+    // ── Cover image preview ─────────────────────────────────────────
+    const coverInput = document.getElementById("cover");
+    const coverPreview = document.getElementById("cover-preview");
+    coverInput.addEventListener("change", () => {
+      const file = coverInput.files?.[0];
+      if (!file) {
+        coverPreview.hidden = true;
+        coverPreview.removeAttribute("src");
+        return;
+      }
+      coverPreview.src = URL.createObjectURL(file);
+      coverPreview.hidden = false;
+    });
+
+    // ── Toast ───────────────────────────────────────────────────────
+    let toastTimer;
+    function toast(message, kind = "error") {
+      clearTimeout(toastTimer);
+      let el = document.querySelector(".toast");
+      if (!el) {
+        el = document.createElement("div");
+        el.className = "toast";
+        el.setAttribute("role", "alert");
+        document.body.appendChild(el);
+      }
+      el.classList.toggle("toast--success", kind === "success");
+      el.textContent = message;
+      el.hidden = false;
+      toastTimer = setTimeout(() => { el.hidden = true; }, 4000);
+    }
+
+    // ── Slug from title ─────────────────────────────────────────────
+    function slugify(title) {
+      return title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-");
+    }
+
+    // ── Save / publish ──────────────────────────────────────────────
+    const publishBtn = document.getElementById("publish-btn");
+    const draftBtn = document.getElementById("draft-btn");
+
+    function setBusy(busy) {
+      publishBtn.disabled = busy;
+      draftBtn.disabled = busy;
+    }
+
+    async function save(published) {
+      const title = document.getElementById("title").value.trim();
+      const body = quill.root.innerHTML;
+      const bodyText = quill.getText().trim();
+
+      // 1. Validate
+      if (!title) { toast("A title is required."); return; }
+      if (!bodyText) { toast("The post body is required."); return; }
+
+      setBusy(true);
+      try {
+        // 2. Upload cover if one was chosen
+        let cover_url = null;
+        const file = coverInput.files?.[0];
+        if (file) {
+          const { url } = await adminUploadFile(file);
+          cover_url = url;
+        }
+
+        // 3-4. Build payload
+        const payload = {
+          title,
+          slug: slugify(title),
+          excerpt: document.getElementById("excerpt").value.trim() || null,
+          body,
+          cover_url,
+          category: document.getElementById("category").value,
+          published,
+        };
+
+        // 5. Create
+        await adminCreatePost(payload);
+
+        // 6. Done
+        window.location.assign("/admin/posts/");
+      } catch (err) {
+        // 7. Surface the error
+        toast(err?.message || "Could not save the post.");
+        setBusy(false);
+      }
+    }
+
+    publishBtn.addEventListener("click", () => save(true));
+    draftBtn.addEventListener("click", () => save(false));
+  </script>
+
+</body>
+</html>
