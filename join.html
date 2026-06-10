@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2B3E1E" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>Join the event | A Case for Wisdom</title>
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+
+  <!-- Chrome-less utility page: a small, self-contained layout, no nav/footer. -->
+  <style>
+    .join-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-6, 2rem);
+      background: var(--color-cream);
+      text-align: center;
+    }
+    .join-card {
+      width: 100%;
+      max-width: 30rem;
+    }
+    .join-logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--space-5, 1.5rem);
+      display: block;
+    }
+    .join-status {
+      font-family: var(--font-display, "Cormorant Garamond"), Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      color: var(--color-green);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      line-height: 1.15;
+      margin: 0 0 var(--space-3, 1rem);
+    }
+    .join-sub {
+      color: var(--color-text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0 0 var(--space-2, 0.5rem);
+    }
+    .join-event-title {
+      font-family: var(--font-display, "Cormorant Garamond"), Georgia, serif;
+      color: var(--color-text);
+      font-size: 1.4rem;
+      margin: var(--space-4, 1.25rem) 0 var(--space-2, 0.5rem);
+    }
+    .join-countdown {
+      font-family: var(--font-display, "Cormorant Garamond"), Georgia, serif;
+      color: var(--color-gold);
+      font-size: clamp(2rem, 7vw, 3.25rem);
+      letter-spacing: 0.04em;
+      margin: var(--space-4, 1.25rem) 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .join-back {
+      display: inline-block;
+      margin-top: var(--space-5, 1.5rem);
+      color: var(--color-green);
+      border-bottom: 1px solid var(--color-gold);
+      padding-bottom: 2px;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    .join-back:hover { color: var(--color-gold); }
+  </style>
+</head>
+
+<body>
+  <main class="join-screen">
+    <div class="join-card" id="join-card" aria-live="polite" aria-busy="true">
+      <img class="join-logo" src="/assets/images/logo.svg" alt="A Case for Wisdom" />
+      <p class="join-status">Verifying your ticket…</p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { checkJoin, ApiError } from "/assets/js/lib/api.js";
+
+    const card = document.getElementById("join-card");
+    let countdownTimer = null;
+
+    const DATE_FMT = new Intl.DateTimeFormat("en-CA", {
+      weekday: "long", year: "numeric", month: "long", day: "numeric",
+    });
+    const TIME_FMT = new Intl.DateTimeFormat("en-CA", {
+      hour: "numeric", minute: "2-digit",
+    });
+
+    function esc(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    function logo() {
+      return `<img class="join-logo" src="/assets/images/logo.svg" alt="A Case for Wisdom" />`;
+    }
+
+    function render(html) {
+      card.setAttribute("aria-busy", "false");
+      card.innerHTML = logo() + html;
+    }
+
+    function renderStatus(headline, sub, extra = "") {
+      render(`
+        <p class="join-status">${esc(headline)}</p>
+        ${sub ? `<p class="join-sub">${esc(sub)}</p>` : ""}
+        ${extra}
+      `);
+    }
+
+    function backLink() {
+      return `<a class="join-back" href="/events.html">← Back to Events</a>`;
+    }
+
+    function renderSuccess(url) {
+      renderStatus("Redirecting you now…", "Opening the event. If nothing happens, use the link below.",
+        `<a class="join-back" href="${esc(url)}">Open the event →</a>`);
+      setTimeout(() => { window.location.href = url; }, 1500);
+    }
+
+    function fmtCountdown(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      const pad = (n) => String(n).padStart(2, "0");
+      return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+    }
+
+    function renderNotStarted(body, ref) {
+      const start = body.startsAt ? new Date(body.startsAt) : null;
+      const opensAt = body.windowOpensAt ? new Date(body.windowOpensAt).getTime() : null;
+      const whenLine = start && !Number.isNaN(start.getTime())
+        ? `This event begins on ${DATE_FMT.format(start)} at ${TIME_FMT.format(start)}.`
+        : "";
+
+      render(`
+        ${body.eventTitle ? `<p class="join-event-title">${esc(body.eventTitle)}</p>` : ""}
+        <p class="join-status">Not open yet</p>
+        ${whenLine ? `<p class="join-sub">${esc(whenLine)}</p>` : ""}
+        <p class="join-sub">Your join link will be active 30 minutes before it starts.</p>
+        <div class="join-countdown" id="countdown" aria-label="Time until the join link opens">—</div>
+        ${backLink()}
+      `);
+
+      const el = document.getElementById("countdown");
+      if (!opensAt || !el) return;
+
+      const tick = () => {
+        const remaining = opensAt - Date.now();
+        if (remaining <= 0) {
+          clearInterval(countdownTimer);
+          el.textContent = "Opening…";
+          attempt(ref); // window has opened — re-check and redirect
+          return;
+        }
+        el.textContent = fmtCountdown(remaining);
+      };
+      tick();
+      countdownTimer = setInterval(tick, 1000);
+    }
+
+    async function attempt(ref) {
+      try {
+        const res = await checkJoin(ref);
+        if (res && res.ok && res.url) { renderSuccess(res.url); return; }
+        renderStatus("Something went wrong", "We couldn’t verify your join link. Please try again.", backLink());
+      } catch (err) {
+        const body = (err instanceof ApiError) ? (err.body || {}) : {};
+        const msg = body.error || (err instanceof ApiError ? err.message : "");
+
+        if (msg === "Event has not started yet") {
+          renderNotStarted(body, ref);
+        } else if (msg === "This event has ended") {
+          renderStatus("This event has ended.", "", backLink());
+        } else if (err instanceof ApiError && err.status === 404) {
+          renderStatus("This ticket was not found.", "", backLink());
+        } else {
+          renderStatus("Couldn’t open the join link",
+            msg || "There was a problem reaching the server. Please try again.", backLink());
+        }
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const ref = new URLSearchParams(window.location.search).get("ref");
+      if (!ref) {
+        renderStatus("This link is missing a ticket reference.", "", backLink());
+        return;
+      }
+      attempt(ref);
+    });
+  </script>
+</body>
+</html>

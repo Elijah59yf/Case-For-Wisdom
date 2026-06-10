@@ -30,6 +30,10 @@ insert into nav_items (label, url, position, visible)
 select 'Shop', '/shop', 3, true
 where not exists (select 1 from nav_items where label = 'Shop');
 
+insert into nav_items (label, url, position, visible)
+select 'Events', '/events.html', 4, true
+where not exists (select 1 from nav_items where label = 'Events');
+
 -- admin_users ---------------------------------------------------------
 -- Default admin account for the Express/JWT (VPS) auth path.
 -- Change this password immediately

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Registrations | A Case for Wisdom · Admin</title>
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+
+<body class="admin-app">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__brand">
+      <span class="admin-sidebar__brand-text">
+        <span class="admin-sidebar__name">A Case for Wisdom</span>
+        <span class="admin-sidebar__badge">Admin</span>
+      </span>
+    </div>
+    <nav class="admin-nav" aria-label="Admin">
+      <a class="admin-nav__link" href="/admin/"><span class="admin-nav__dot"></span>Dashboard</a>
+      <a class="admin-nav__link" href="/admin/posts/"><span class="admin-nav__dot"></span>Posts</a>
+      <a class="admin-nav__link" href="/admin/products/"><span class="admin-nav__dot"></span>Products</a>
+      <a class="admin-nav__link is-active" href="/admin/events/" aria-current="page"><span class="admin-nav__dot"></span>Events</a>
+      <a class="admin-nav__link" href="/admin/admins/"><span class="admin-nav__dot"></span>Admins</a>
+      <a class="admin-nav__link" href="/admin/media/"><span class="admin-nav__dot"></span>Media</a>
+      <a class="admin-nav__link" href="/admin/settings/"><span class="admin-nav__dot"></span>Settings</a>
+    </nav>
+    <div class="admin-sidebar__foot">
+      <button type="button" class="admin-logout" id="logout-link"><span class="admin-nav__dot"></span>Log out</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-pagehead">
+      <div>
+        <h1 class="admin-pagehead__title" id="event-title">Registrations</h1>
+        <p id="event-date" style="color:var(--admin-text-muted,#6b6b6b);margin:4px 0 0;font-size:.9rem;"></p>
+      </div>
+      <div class="admin-pagehead__actions">
+        <a class="btn-admin-ghost" href="/admin/events/">← Events</a>
+        <button class="btn-admin-ghost" id="toggle-reg-btn" disabled>Close Registration</button>
+        <button class="btn-admin-primary" id="export-btn" disabled>Export CSV</button>
+      </div>
+    </div>
+
+    <div id="stats-bar" style="display:flex;gap:1.5rem;margin-bottom:1.25rem;font-size:.95rem;color:var(--admin-text,#1a1a1a);">
+      <span id="stat-registered">— registered</span>
+      <span id="stat-attended">— attended</span>
+      <span id="stat-capacity">— capacity</span>
+    </div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Ticket Ref</th>
+          <th scope="col">Registered</th>
+          <th scope="col">Attended</th>
+          <th scope="col">Check In</th>
+        </tr>
+      </thead>
+      <tbody id="reg-body">
+        <tr><td colspan="6"><span class="sk sk-line"></span></td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script type="module">
+    import { isAuthenticated, signOut } from "/assets/js/auth.js";
+    import {
+      adminGetEvent, adminGetRegistrations, adminGetAttendanceStats,
+      markAttendance, toggleEventRegistration, IS_VPS, BASE_URL,
+    } from "/assets/js/lib/api.js";
+
+    if (!(await isAuthenticated())) window.location.replace("/admin/login.html");
+
+    document.getElementById("logout-link").addEventListener("click", async () => {
+      try { await signOut(); } catch {}
+      window.location.replace("/admin/login.html");
+    });
+
+    const eventId = new URLSearchParams(window.location.search).get("id");
+    if (!eventId) window.location.replace("/admin/events/");
+
+    const DATE_FMT = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+    });
+    function fmtDate(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      return Number.isNaN(d.getTime()) ? "—" : DATE_FMT.format(d);
+    }
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    // Ticket view link → inline PDF on VPS; fall back to the HTML ticket page.
+    function ticketViewUrl(ref) {
+      return IS_VPS && BASE_URL
+        ? `${BASE_URL}/tickets/${encodeURIComponent(ref)}/view`
+        : `/ticket.html?ref=${encodeURIComponent(ref)}`;
+    }
+
+    const tbody = document.getElementById("reg-body");
+    const toggleBtn = document.getElementById("toggle-reg-btn");
+    const exportBtn = document.getElementById("export-btn");
+
+    let event = null;
+    let registrations = [];
+
+    function renderStats() {
+      const total = registrations.length;
+      const attended = registrations.filter((r) => r.attended).length;
+      const cap = event?.capacity == null ? "Unlimited" : event.capacity;
+      document.getElementById("stat-registered").textContent = `${total} registered`;
+      document.getElementById("stat-attended").textContent = `${attended} attended`;
+      document.getElementById("stat-capacity").textContent = `${cap} capacity`;
+    }
+
+    function setToggleLabel() {
+      const open = event?.registration_open !== false;
+      toggleBtn.textContent = open ? "Close Registration" : "Reopen Registration";
+    }
+
+    function checkCell(reg) {
+      const on = !!reg.attended;
+      return on
+        ? `<button type="button" class="btn-admin-ghost btn-admin-sm" data-action="checkin" title="Checked in">✓ Checked in</button>`
+        : `<button type="button" class="btn-admin-ghost btn-admin-sm" data-action="checkin" title="Mark attended">○ Check in</button>`;
+    }
+
+    function rowHTML(reg) {
+      return `
+        <td>${escapeHTML(reg.name)}</td>
+        <td>${escapeHTML(reg.email)}</td>
+        <td><a href="${escapeHTML(ticketViewUrl(reg.ticket_ref))}" target="_blank" rel="noopener" style="font-family:monospace;">${escapeHTML(reg.ticket_ref)}</a></td>
+        <td>${escapeHTML(fmtDate(reg.created_at))}</td>
+        <td data-cell="attended">${reg.attended ? "Yes" : "—"}</td>
+        <td data-cell="checkin">${checkCell(reg)}</td>`;
+    }
+
+    function makeRow(reg) {
+      const tr = document.createElement("tr");
+      tr.dataset.ref = reg.ticket_ref;
+      tr.innerHTML = rowHTML(reg);
+      tr.querySelector('[data-action="checkin"]').addEventListener("click", (e) => checkIn(reg, tr, e.currentTarget));
+      return tr;
+    }
+
+    async function checkIn(reg, tr, btn) {
+      const next = !reg.attended;
+      btn.disabled = true;
+      try {
+        await markAttendance(reg.ticket_ref, next);
+        reg.attended = next;
+        tr.querySelector('[data-cell="attended"]').textContent = next ? "Yes" : "—";
+        tr.querySelector('[data-cell="checkin"]').innerHTML = checkCell(reg);
+        tr.querySelector('[data-action="checkin"]').addEventListener("click", (e) => checkIn(reg, tr, e.currentTarget));
+        renderStats();
+      } catch (err) {
+        alert(err?.message || "Could not update attendance.");
+        btn.disabled = false;
+      }
+    }
+
+    toggleBtn.addEventListener("click", async () => {
+      toggleBtn.disabled = true;
+      try {
+        const { registration_open } = await toggleEventRegistration(eventId);
+        event.registration_open = registration_open;
+        setToggleLabel();
+      } catch (err) {
+        alert(err?.message || "Could not change registration state.");
+      } finally {
+        toggleBtn.disabled = false;
+      }
+    });
+
+    function csvEscape(v) {
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
+    }
+    exportBtn.addEventListener("click", () => {
+      const header = ["Name", "Email", "Ticket Ref", "Registration Date", "Attended", "Check-in Time"];
+      const rows = registrations.map((r) => [
+        r.name, r.email, r.ticket_ref, fmtDate(r.created_at),
+        r.attended ? "Yes" : "No", r.checked_in_at ? fmtDate(r.checked_in_at) : "",
+      ].map(csvEscape).join(","));
+      const csv = [header.join(","), ...rows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const today = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `registrations-${event?.slug || eventId}-${today}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    (async function init() {
+      try {
+        event = await adminGetEvent(eventId);
+        document.getElementById("event-title").textContent = event.title || "Registrations";
+        document.getElementById("event-date").textContent = fmtDate(event.event_date);
+        setToggleLabel();
+
+        registrations = await adminGetRegistrations(eventId);
+        if (!registrations.length) {
+          tbody.innerHTML = `<tr class="admin-empty"><td colspan="6">No registrations yet.</td></tr>`;
+        } else {
+          tbody.replaceChildren(...registrations.map(makeRow));
+        }
+        renderStats();
+        toggleBtn.disabled = false;
+        exportBtn.disabled = registrations.length === 0;
+      } catch (err) {
+        console.error("[registrations] load failed", err);
+        tbody.innerHTML = `<tr class="admin-empty"><td colspan="6">Could not load registrations. Please refresh.</td></tr>`;
+      }
+    })();
+  </script>
+
+</body>
+</html>

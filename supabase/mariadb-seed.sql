@@ -31,6 +31,10 @@ INSERT INTO nav_items (label, url, position, visible)
 SELECT * FROM (SELECT 'Shop', '/shop', 3, 1) t
 WHERE NOT EXISTS (SELECT 1 FROM nav_items WHERE label = 'Shop');
 
+INSERT INTO nav_items (label, url, position, visible)
+SELECT * FROM (SELECT 'Events', '/events.html', 4, 1) t
+WHERE NOT EXISTS (SELECT 1 FROM nav_items WHERE label = 'Events');
+
 -- admin_users ---------------------------------------------------------
 -- Default admin account for local-dev JWT login.
 -- Change this password immediately

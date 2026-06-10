@@ -82,7 +82,7 @@ export class NetworkError extends Error {
   }
 }
 export class ApiError extends Error {
-  constructor(message, status) { super(message); this.name = "ApiError"; this.status = status; }
+  constructor(message, status, body) { super(message); this.name = "ApiError"; this.status = status; this.body = body; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -212,8 +212,9 @@ async function request(path, opts = {}) {
 
   if (!res.ok) {
     let message = `${res.status} ${res.statusText}`;
-    try { const j = await res.json(); if (j?.error) message = j.error; } catch {}
-    throw new ApiError(message, res.status);
+    let body;
+    try { body = await res.json(); if (body?.error) message = body.error; } catch {}
+    throw new ApiError(message, res.status, body);
   }
   if (res.status === 204) return null;
   return res.json();
@@ -259,6 +260,54 @@ export async function getPostBySlug(slug, opts) {
   sbThrow(error);
   if (!data) throw new ApiError("not found", 404);
   return withReadTime(data);
+}
+
+// Events: published, from the start of today onward, soonest-first.
+export async function getEvents(params, opts) {
+  if (IS_VPS) return request(`/events${qs(params)}`, opts);
+  const { limit = 50, offset = 0 } = params || {};
+  const cutoff = new Date();
+  cutoff.setHours(0, 0, 0, 0);
+  const { data, error } = await withSignal(
+    (await sb())
+      .from("events")
+      .select("*")
+      .eq("published", true)
+      .gte("event_date", cutoff.toISOString())
+      .order("event_date", { ascending: true })
+      .range(offset, offset + limit - 1),
+    opts
+  );
+  sbThrow(error);
+  return data ?? [];
+}
+
+// Past events: published, already finished, most-recent-first (max 20).
+export async function getPastEvents(opts) {
+  if (IS_VPS) return request(`/events/past`, opts);
+  const { data, error } = await withSignal(
+    (await sb())
+      .from("events")
+      .select("*")
+      .eq("published", true)
+      .lt("event_date", new Date().toISOString())
+      .order("event_date", { ascending: false })
+      .limit(20),
+    opts
+  );
+  sbThrow(error);
+  return data ?? [];
+}
+
+export async function getEventBySlug(slug, opts) {
+  if (IS_VPS) return request(`/events/${encodeURIComponent(slug)}`, opts);
+  const { data, error } = await withSignal(
+    (await sb()).from("events").select("*").eq("slug", slug).eq("published", true).maybeSingle(),
+    opts
+  );
+  sbThrow(error);
+  if (!data) throw new ApiError("not found", 404);
+  return data;
 }
 
 export async function getProducts(params, opts) {
@@ -370,8 +419,9 @@ export async function createPaymentIntent(payload) {
   });
   if (!res.ok) {
     let message = `${res.status} ${res.statusText}`;
-    try { const j = await res.json(); if (j?.error) message = j.error; } catch {}
-    throw new ApiError(message, res.status);
+    let body;
+    try { body = await res.json(); if (body?.error) message = body.error; } catch {}
+    throw new ApiError(message, res.status, body);
   }
   return res.json();
 }
@@ -435,6 +485,180 @@ export async function adminDeletePost(id) {
   const { error } = await (await sb()).from("posts").delete().eq("id", id);
   sbThrow(error);
   return { id };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ADMIN: events
+// ═══════════════════════════════════════════════════════════════════════════
+export async function adminGetEvents(params) {
+  if (IS_VPS) return request(`/events/all${qs(params)}`);
+  const { limit = 100, offset = 0 } = params || {};
+  const { data, error } = await (await sb())
+    .from("events").select("*").order("event_date", { ascending: false }).range(offset, offset + limit - 1);
+  sbThrow(error);
+  return data ?? [];
+}
+export async function adminGetEvent(id) {
+  if (IS_VPS) return request(`/events/admin/${encodeURIComponent(id)}`);
+  const { data, error } = await (await sb())
+    .from("events").select("*").eq("id", id).maybeSingle();
+  sbThrow(error);
+  if (!data) throw new ApiError("not found", 404);
+  return data;
+}
+export async function adminCreateEvent(data) {
+  if (IS_VPS) return request(`/events`, { method: "POST", body: data });
+  const { data: row, error } = await (await sb()).from("events").insert(data).select().single();
+  sbThrow(error);
+  return row;
+}
+export async function adminUpdateEvent(id, d) {
+  if (IS_VPS) return request(`/events/${id}`, { method: "PUT", body: d });
+  const { data: row, error } = await (await sb()).from("events").update(d).eq("id", id).select().single();
+  sbThrow(error);
+  return row;
+}
+export async function adminDeleteEvent(id) {
+  if (IS_VPS) return request(`/events/${id}`, { method: "DELETE" });
+  const { error } = await (await sb()).from("events").delete().eq("id", id);
+  sbThrow(error);
+  return { id };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  EVENT REGISTRATIONS / TICKETING
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Public: register for an event. On VPS the server generates the ticket ref
+// and sends the confirmation email. On the Supabase target there is no server
+// hook, so we generate a ref client-side and insert directly (no email).
+export async function registerForEvent(slug, { name, email }) {
+  if (IS_VPS) {
+    return request(`/events/${encodeURIComponent(slug)}/register`, {
+      method: "POST",
+      body: { name, email },
+    });
+  }
+  const client = await sb();
+  const { data: ev, error: evErr } = await client
+    .from("events").select("*").eq("slug", slug).eq("published", true).maybeSingle();
+  sbThrow(evErr);
+  if (!ev) throw new ApiError("not found", 404);
+  if (!ev.registration_open) throw new ApiError("Registration is closed", 403);
+  if (ev.capacity != null) {
+    const { count, error: cErr } = await client
+      .from("event_registrations").select("id", { count: "exact", head: true }).eq("event_id", ev.id);
+    sbThrow(cErr);
+    if ((count ?? 0) >= ev.capacity) throw new ApiError("This event is full", 403);
+  }
+  const lower = String(email).trim().toLowerCase();
+  const { data: dup } = await client
+    .from("event_registrations").select("ticket_ref").eq("event_id", ev.id).eq("email", lower).maybeSingle();
+  if (dup) throw new ApiError("You're already registered for this event", 409, { ticketRef: dup.ticket_ref });
+
+  const prefix = (String(ev.slug).toUpperCase().replace(/[^A-Z0-9]/g, "") + "XXXX").slice(0, 4);
+  const ALPHA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let rand = "";
+  for (let i = 0; i < 6; i++) rand += ALPHA[Math.floor(Math.random() * ALPHA.length)];
+  const ticketRef = `CFW-${prefix}-${rand}`;
+
+  const { error: insErr } = await client.from("event_registrations").insert({
+    event_id: ev.id, ticket_ref: ticketRef, name: String(name).trim(), email: lower,
+  });
+  sbThrow(insErr);
+  const ticketUrl = `${window.location.origin}/ticket.html?ref=${encodeURIComponent(ticketRef)}`;
+  return { ok: true, ticketRef, ticketUrl };
+}
+
+// Public: fetch a single ticket's registration + event data by reference.
+// Used by ticket.html to render the on-screen ticket.
+export async function getTicket(ticketRef) {
+  if (IS_VPS) return request(`/tickets/${encodeURIComponent(ticketRef)}/data`);
+  const { data, error } = await (await sb())
+    .from("event_registrations")
+    .select("ticket_ref, name, attended, events(title, slug, event_date, location, location_url, is_online)")
+    .eq("ticket_ref", ticketRef)
+    .maybeSingle();
+  sbThrow(error);
+  if (!data) throw new ApiError("not found", 404);
+  const ev = data.events || {};
+  return {
+    ticket_ref: data.ticket_ref,
+    name: data.name,
+    attended: !!data.attended,
+    event_title: ev.title,
+    event_slug: ev.slug,
+    event_date: ev.event_date,
+    location: ev.location,
+    location_url: ev.location_url,
+    is_online: !!ev.is_online,
+  };
+}
+
+// Verify a join link and, on success, get the meeting URL to redirect to.
+// Gating + automatic attendance marking happen server-side. On success returns
+// { ok: true, url }. On failure throws ApiError whose `body` carries the gate
+// detail (e.g. { error, startsAt, windowOpensAt, eventTitle }).
+//
+// This is an online-event feature served only by Express (Target B). On the
+// Cloudflare target there is no server to gate the meeting URL, so it errors.
+export async function checkJoin(ticketRef) {
+  if (IS_VPS) return request(`/join/${encodeURIComponent(ticketRef)}/check`);
+  throw new ApiError("Online join links are not available on this deployment.", 501);
+}
+
+// Admin: flip registration_open. Returns { registration_open }.
+export async function toggleEventRegistration(id) {
+  if (IS_VPS) return request(`/events/${encodeURIComponent(id)}/toggle-registration`, { method: "PATCH" });
+  const client = await sb();
+  const { data: ev, error } = await client.from("events").select("registration_open").eq("id", id).maybeSingle();
+  sbThrow(error);
+  const next = !ev?.registration_open;
+  const { error: uErr } = await client.from("events").update({ registration_open: next }).eq("id", id);
+  sbThrow(uErr);
+  return { registration_open: next };
+}
+
+// Admin: all registrations for an event.
+export async function adminGetRegistrations(eventId) {
+  if (IS_VPS) return request(`/events/${encodeURIComponent(eventId)}/registrations`);
+  const { data, error } = await (await sb())
+    .from("event_registrations").select("*").eq("event_id", eventId)
+    .order("created_at", { ascending: false });
+  sbThrow(error);
+  return data ?? [];
+}
+
+// Admin: toggle attendance / check-in for a ticket.
+export async function markAttendance(ticketRef, attended) {
+  if (IS_VPS) {
+    return request(`/tickets/${encodeURIComponent(ticketRef)}/attend`, {
+      method: "PATCH",
+      body: { attended: !!attended },
+    });
+  }
+  const { data, error } = await (await sb())
+    .from("event_registrations")
+    .update({ attended: !!attended, checked_in_at: attended ? new Date().toISOString() : null })
+    .eq("ticket_ref", ticketRef).select().single();
+  sbThrow(error);
+  return data;
+}
+
+// Admin: { total, attended, capacity }.
+export async function adminGetAttendanceStats(eventId) {
+  if (IS_VPS) {
+    const regs = await request(`/events/${encodeURIComponent(eventId)}/registrations`);
+    const ev = await adminGetEvent(eventId);
+    const list = Array.isArray(regs) ? regs : [];
+    return { total: list.length, attended: list.filter((r) => r.attended).length, capacity: ev?.capacity ?? null };
+  }
+  const client = await sb();
+  const { data, error } = await client.from("event_registrations").select("attended").eq("event_id", eventId);
+  sbThrow(error);
+  const ev = await adminGetEvent(eventId);
+  const rows = data ?? [];
+  return { total: rows.length, attended: rows.filter((r) => r.attended).length, capacity: ev?.capacity ?? null };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

@@ -76,6 +76,37 @@ drop policy if exists "subscribers admin read" on subscribers;
 create policy "subscribers admin read" on subscribers
   for select to authenticated using (true);
 
+-- events --------------------------------------------------------------
+drop policy if exists "events read published" on events;
+create policy "events read published" on events
+  for select using (published = true);
+
+drop policy if exists "events admin write" on events;
+create policy "events admin write" on events
+  for all to authenticated using (true) with check (true);
+
+-- event_registrations -------------------------------------------------
+-- Anyone may register (public INSERT). The public may read only their own
+-- ticket, scoped by a request-local setting app.ticket_ref the API sets
+-- before selecting. Admins (authenticated) get full read/update.
+alter table event_registrations enable row level security;
+
+drop policy if exists "registrations public insert" on event_registrations;
+create policy "registrations public insert" on event_registrations
+  for insert with check (true);
+
+drop policy if exists "registrations read own ticket" on event_registrations;
+create policy "registrations read own ticket" on event_registrations
+  for select using (ticket_ref = current_setting('app.ticket_ref', true));
+
+drop policy if exists "registrations admin read" on event_registrations;
+create policy "registrations admin read" on event_registrations
+  for select to authenticated using (true);
+
+drop policy if exists "registrations admin update" on event_registrations;
+create policy "registrations admin update" on event_registrations
+  for update to authenticated using (true) with check (true);
+
 -- admin_users ---------------------------------------------------------
 -- admin_users has no public RLS policy.
 -- All access goes through the Express API (VPS)

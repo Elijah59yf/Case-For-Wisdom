@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2B3E1E" />
+
+  <title>Loading… | A Case for Wisdom</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="A Case for Wisdom" />
+  <meta property="og:description" content="An event from A Case for Wisdom." />
+  <meta property="og:image" content="/assets/images/og-image.jpg" />
+  <meta property="og:site_name" content="A Case for Wisdom" />
+  <meta property="og:locale" content="en_CA" />
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+  <link rel="apple-touch-icon" href="/assets/images/og-image.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+  <link rel="stylesheet" href="/assets/css/events.css" />
+</head>
+
+<body>
+
+  <a class="skip-link" href="#event-main">Skip to content</a>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a class="nav__brand" href="/" aria-label="A Case for Wisdom — Home">
+        <svg class="nav__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.55"/>
+          <path d="M32 14 V50" stroke="currentColor" stroke-width="1.25" fill="none"/>
+          <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 30 Q26 32 24 40" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 30 Q38 32 40 40" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M14 50 Q22 46 32 50 T 50 50" stroke="#B8953A" stroke-width="1.25" fill="none"/>
+        </svg>
+        <span class="nav__brand-text" data-site-name></span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary" data-nav-links></nav>
+
+      <div class="nav__actions">
+        <a class="nav__cart" href="/cart/" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M3 5h2l2.4 11.2A2 2 0 0 0 9.36 18h8.28a2 2 0 0 0 1.96-1.6L21 9H6"/>
+            <circle cx="10" cy="21" r="1.2"/>
+            <circle cx="18" cy="21" r="1.2"/>
+          </svg>
+          <span class="nav__cart-count" data-cart-count hidden>0</span>
+        </a>
+
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="mobile-drawer" data-nav-toggle>
+          <span class="sr-only">Open menu</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__drawer" id="mobile-drawer" data-open="false" aria-hidden="true">
+      <a class="nav__link" href="/cart/">Cart</a>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       EVENT
+       ============================================================ -->
+  <main id="event-main">
+    <div class="event-loading" data-loading aria-hidden="true">
+      <div class="skeleton skeleton-line skeleton-line--sm" style="margin-bottom: var(--space-4);"></div>
+      <div class="skeleton skeleton-line skeleton-line--title" style="height: 2.4rem; width: 70%; margin-bottom: var(--space-3);"></div>
+      <div class="skeleton skeleton-line skeleton-line--wide" style="margin-bottom: var(--space-6);"></div>
+      <div class="skeleton skeleton-card__media" style="margin-bottom: var(--space-6);"></div>
+      <div class="skeleton skeleton-line skeleton-line--wide" style="margin-bottom: var(--space-3);"></div>
+      <div class="skeleton skeleton-line skeleton-line--mid"></div>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div class="footer__brand-block">
+        <div class="footer__brand" data-site-name></div>
+        <p class="footer__tagline" data-footer-tagline></p>
+      </div>
+      <nav class="footer__links" aria-label="Footer">
+        <a class="footer__link" href="/">Journal</a>
+        <a class="footer__link" href="/about.html">About</a>
+        <a class="footer__link" href="/shop/">Shop</a>
+        <a class="footer__link" href="/events.html">Events</a>
+        <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+      </nav>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> <span data-site-name></span> — <span data-footer-copy></span></span>
+      <span>All prices in CAD.</span>
+    </div>
+  </footer>
+
+  <!-- Mobile drawer toggle -->
+  <script type="module">
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const drawer = document.getElementById("mobile-drawer");
+    if (toggle && drawer) {
+      toggle.addEventListener("click", () => {
+        const open = drawer.getAttribute("data-open") === "true";
+        drawer.setAttribute("data-open", String(!open));
+        drawer.setAttribute("aria-hidden", String(open));
+        toggle.setAttribute("aria-expanded", String(!open));
+      });
+    }
+  </script>
+
+  <!-- Single event logic -->
+  <script type="module">
+    import { loadNav, loadFooter } from "/assets/js/site.js";
+    import { getEventBySlug, registerForEvent, ApiError, IS_VPS, BASE_URL } from "/assets/js/lib/api.js";
+
+    const DATE_FMT = new Intl.DateTimeFormat("en-US", {
+      weekday: "long", year: "numeric", month: "long", day: "numeric",
+    });
+    const TIME_FMT = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    function formatWhen(startIso, endIso) {
+      const start = startIso ? new Date(startIso) : null;
+      if (!start || Number.isNaN(start.getTime())) return "";
+      let out = `${DATE_FMT.format(start)} · ${TIME_FMT.format(start)}`;
+      if (endIso) {
+        const end = new Date(endIso);
+        if (!Number.isNaN(end.getTime())) {
+          const sameDay = start.toDateString() === end.toDateString();
+          out += sameDay
+            ? ` – ${TIME_FMT.format(end)}`
+            : ` – ${DATE_FMT.format(end)} · ${TIME_FMT.format(end)}`;
+        }
+      }
+      return out;
+    }
+
+    function eventType(ev) {
+      if (ev.is_online && ev.is_inperson) return { dotClass: "event-type-dot--both", label: "Online & In Person" };
+      if (ev.is_online) return { dotClass: "event-type-dot--online", label: "Online" };
+      if (ev.is_inperson) return { dotClass: "event-type-dot--inperson", label: "In Person" };
+      return null;
+    }
+
+    // Google Calendar wants UTC stamps as YYYYMMDDTHHMMSSZ.
+    function gcalStamp(date) {
+      return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    }
+
+    function calendarUrl(ev) {
+      const start = new Date(ev.event_date);
+      if (Number.isNaN(start.getTime())) return null;
+      let end = ev.end_date ? new Date(ev.end_date) : null;
+      if (!end || Number.isNaN(end.getTime())) end = new Date(start.getTime() + 60 * 60 * 1000);
+      const details = String(ev.description || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      const params = new URLSearchParams({
+        action: "TEMPLATE",
+        text: ev.title || "",
+        dates: `${gcalStamp(start)}/${gcalStamp(end)}`,
+        details,
+        location: ev.location || "",
+      });
+      return `https://calendar.google.com/calendar/render?${params.toString()}`;
+    }
+
+    function renderEvent(ev) {
+      const type = eventType(ev);
+      const when = formatWhen(ev.event_date, ev.end_date);
+
+      const badges = type
+        ? `<div class="event-badges">
+             <span class="event-type"><span class="event-type-dot ${type.dotClass}" aria-hidden="true"></span>${escapeHTML(type.label)}</span>
+           </div>`
+        : "";
+
+      let location = "";
+      if (ev.is_inperson && ev.location) {
+        location = ev.location_url
+          ? `<p class="event-location">${escapeHTML(ev.location)} · <a href="${escapeHTML(ev.location_url)}" target="_blank" rel="noopener">View map</a></p>`
+          : `<p class="event-location">${escapeHTML(ev.location)}</p>`;
+      }
+
+      const cover = ev.cover_url
+        ? `<img class="event-cover" src="${escapeHTML(ev.cover_url)}" alt="Cover image for “${escapeHTML(ev.title)}”" decoding="async" />`
+        : "";
+
+      const calUrl = calendarUrl(ev);
+      const calLink = calUrl
+        ? `<a class="event-calendar" href="${escapeHTML(calUrl)}" target="_blank" rel="noopener">Add to calendar</a>`
+        : "";
+
+      const main = document.getElementById("event-main");
+      main.innerHTML = `
+        <article class="event-page">
+          <header class="event-header">
+            ${when ? `<p class="event-when">${escapeHTML(when)}</p>` : ""}
+            <h1 class="event-page-title">${escapeHTML(ev.title)}</h1>
+            ${badges}
+            ${location}
+          </header>
+          ${cover}
+          <div class="event-body prose"></div>
+          <div id="event-registration"></div>
+          <div class="event-actions">
+            ${calLink}
+          </div>
+          <footer class="event-footer">
+            <a href="/events.html" class="event-back">← Back to Events</a>
+          </footer>
+        </article>
+      `;
+      main.querySelector(".event-body").innerHTML = ev.description || "";
+
+      renderRegistration(ev, document.getElementById("event-registration"));
+
+      document.title = `${ev.title} | A Case for Wisdom`;
+    }
+
+    // PDF download link only exists on the VPS/Express target.
+    function pdfUrl(ref) {
+      return IS_VPS && BASE_URL ? `${BASE_URL}/tickets/${encodeURIComponent(ref)}` : null;
+    }
+
+    const PRICE_FMT = new Intl.NumberFormat("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function hasPassed(ev) {
+      const end = ev.end_date ? new Date(ev.end_date) : new Date(ev.event_date);
+      return !Number.isNaN(end.getTime()) && end.getTime() < Date.now();
+    }
+
+    function successHTML(ticketRef, ticketUrl) {
+      const pdf = pdfUrl(ticketRef);
+      return `
+        <div class="event-register-box event-reg-success">
+          <h2 class="event-register-box__title">You're registered.</h2>
+          <div class="event-reg-success__ref">${escapeHTML(ticketRef)}</div>
+          <div class="event-reg-links">
+            <a class="event-register" href="${escapeHTML(ticketUrl || `/ticket.html?ref=${encodeURIComponent(ticketRef)}`)}">View your ticket →</a>
+            ${pdf ? `<a class="event-calendar" href="${escapeHTML(pdf)}">Download PDF →</a>` : ""}
+          </div>
+        </div>`;
+    }
+
+    function renderRegistration(ev, host) {
+      if (!host) return;
+
+      // State 5 — event has passed: no form at all.
+      if (hasPassed(ev)) {
+        host.innerHTML = `<p class="event-reg-notice">This event has passed.</p>`;
+        return;
+      }
+
+      // State 3 — admin force-closed registration.
+      if (ev.registration_open === false) {
+        host.innerHTML = `<p class="event-reg-notice">Registration is closed.</p>`;
+        return;
+      }
+
+      const paid = !!ev.is_paid && Number(ev.price) > 0;
+      const priceLine = paid
+        ? `<p class="event-register-box__price">CAD $${PRICE_FMT.format(Number(ev.price))}</p>`
+        : "";
+      const buttonLabel = paid ? `Register — CAD $${PRICE_FMT.format(Number(ev.price))}` : "Register";
+
+      host.innerHTML = `
+        <div class="event-register-box">
+          <h2 class="event-register-box__title">Register for this event</h2>
+          ${priceLine}
+          <form id="reg-form" novalidate>
+            <label class="event-reg-field">
+              <span>Your name</span>
+              <input type="text" id="reg-name" name="name" required autocomplete="name" />
+            </label>
+            <label class="event-reg-field">
+              <span>Email address</span>
+              <input type="email" id="reg-email" name="email" required autocomplete="email" />
+            </label>
+            <p class="event-reg-error" id="reg-error" role="alert" style="color:#a23;font-family:var(--font-body);font-size:var(--text-sm);margin:0 0 var(--space-3);" hidden></p>
+            <button type="submit" class="event-register" id="reg-submit">${escapeHTML(buttonLabel)}</button>
+          </form>
+        </div>`;
+
+      const form = host.querySelector("#reg-form");
+      const errEl = host.querySelector("#reg-error");
+      const submit = host.querySelector("#reg-submit");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errEl.hidden = true;
+        const name = host.querySelector("#reg-name").value.trim();
+        const email = host.querySelector("#reg-email").value.trim();
+        if (!name || !email) {
+          errEl.textContent = "Please enter your name and email.";
+          errEl.hidden = false;
+          return;
+        }
+
+        // State 2 — paid event. Stripe checkout for event tickets is not yet
+        // wired to the backend; for now registration proceeds and the payment
+        // hook is a TODO. Free events register immediately.
+        submit.disabled = true;
+        const original = submit.textContent;
+        submit.textContent = "Registering…";
+        try {
+          const res = await registerForEvent(ev.slug, { name, email });
+          host.innerHTML = successHTML(res.ticketRef, res.ticketUrl);
+        } catch (err) {
+          // 409 duplicate — surface the existing ticket so they can retrieve it.
+          if (err instanceof ApiError && err.status === 409) {
+            let ref = err.body?.ticketRef;
+            if (!ref) { try { ref = JSON.parse(err.message)?.ticketRef; } catch {} }
+            if (ref) { host.innerHTML = successHTML(ref); return; }
+          }
+          // State 4 — full, or closed mid-session.
+          const msg = err?.body?.error || err?.message || "Something went wrong. Please try again.";
+          if (err instanceof ApiError && err.status === 403 && /full/i.test(msg)) {
+            host.innerHTML = `<p class="event-reg-notice">This event is full.</p>`;
+            return;
+          }
+          if (err instanceof ApiError && err.status === 403) {
+            host.innerHTML = `<p class="event-reg-notice">Registration is closed.</p>`;
+            return;
+          }
+          errEl.textContent = msg;
+          errEl.hidden = false;
+          submit.disabled = false;
+          submit.textContent = original;
+        }
+      });
+    }
+
+    function renderMessage({ headline, sub, showRetry }) {
+      const main = document.getElementById("event-main");
+      main.innerHTML = `
+        <div class="event-page">
+          <div class="events-empty" role="alert" style="border:0;">
+            ${escapeHTML(headline)}
+          </div>
+          <p style="text-align:center;color:var(--color-text-muted);font-family:var(--font-body);font-size:var(--text-sm);">${escapeHTML(sub)}</p>
+          <div class="event-footer">
+            ${showRetry ? `<button type="button" class="event-back" data-retry>Try again</button>` : "<span></span>"}
+            <a href="/events.html" class="event-back">← Back to Events</a>
+          </div>
+        </div>
+      `;
+      const retry = main.querySelector("[data-retry]");
+      if (retry) retry.addEventListener("click", () => load());
+    }
+
+    let slug;
+    async function load() {
+      const controller = new AbortController();
+      window.addEventListener("pagehide", () => controller.abort(), { once: true });
+
+      let event;
+      try {
+        event = await getEventBySlug(slug, { signal: controller.signal });
+      } catch (err) {
+        if (err?.name === "AbortError") return;
+        if (err instanceof ApiError && err.status === 404) {
+          renderMessage({
+            headline: "This event couldn’t be found.",
+            sub: "It may have been moved or unpublished.",
+            showRetry: false,
+          });
+          return;
+        }
+        console.error("[event] failed to load", err);
+        renderMessage({
+          headline: "We couldn’t load this event.",
+          sub: "There was a problem reaching the server. Please try again in a moment.",
+          showRetry: true,
+        });
+        return;
+      }
+
+      if (!event || !event.title) {
+        renderMessage({
+          headline: "This event couldn’t be found.",
+          sub: "It may have been moved or unpublished.",
+          showRetry: false,
+        });
+        return;
+      }
+
+      renderEvent(event);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("[data-year]").forEach((el) => { el.textContent = new Date().getFullYear(); });
+      loadNav();
+      loadFooter();
+
+      slug = new URLSearchParams(window.location.search).get("slug");
+      if (!slug) {
+        window.location.href = "/events.html";
+        return;
+      }
+      load();
+    });
+  </script>
+
+</body>
+</html>

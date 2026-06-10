@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#2B3E1E" />
 
-  <title>Journal — A Case for Wisdom</title>
-  <meta name="description" content="Essays, reflections, and letters on wisdom, scripture, and the long patience of a life lived attentively." />
+  <title>Journal | A Case for Wisdom</title>
+  <meta name="description" content="Essays, reflections, and letters on wisdom, faith, and scripture." />
 
   <link rel="canonical" href="https://acaseforwisdom.com/" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Journal — A Case for Wisdom" />
-  <meta property="og:description" content="Essays, reflections, and letters on wisdom, scripture, and the long patience of a life lived attentively." />
+  <meta property="og:title" content="Journal | A Case for Wisdom" />
+  <meta property="og:description" content="Essays, reflections, and letters on wisdom, faith, and scripture." />
   <meta property="og:image" content="/assets/images/og-image.jpg" />
   <meta property="og:url" content="https://acaseforwisdom.com/" />
   <meta property="og:site_name" content="A Case for Wisdom" />
@@ -20,7 +20,7 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Journal — A Case for Wisdom" />
-  <meta name="twitter:description" content="Essays, reflections, and letters on wisdom, scripture, and the long patience of a life lived attentively." />
+  <meta name="twitter:description" content="Essays, reflections, and letters on wisdom, faith, and scripture." />
   <meta name="twitter:image" content="/assets/images/og-image.jpg" />
 
   <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
@@ -33,104 +33,6 @@
   <link rel="stylesheet" href="/assets/css/global.css" />
   <link rel="stylesheet" href="/assets/css/components.css" />
   <link rel="stylesheet" href="/assets/css/blog.css" />
-
-  <!-- Page-scoped components (search + newsletter). The shared sheets are the
-       design system; these reuse its tokens only and add no new global CSS. -->
-  <style>
-    .journal-search {
-      max-width: var(--container-full);
-      margin-inline: auto;
-      padding: var(--space-7) var(--space-section-x) 0;
-    }
-    .journal-search__field { max-width: var(--container-prose); }
-    .journal-search__input {
-      width: 100%;
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      color: var(--color-text);
-      background: transparent;
-      border: 0;
-      border-bottom: var(--border-hair);
-      padding: var(--space-3) 0;
-      transition: var(--transition-colors);
-    }
-    .journal-search__input::placeholder { color: var(--color-text-muted); }
-    .journal-search__input:focus { outline: none; border-bottom-color: var(--color-gold); }
-    .journal-search__count {
-      margin: var(--space-3) 0 0;
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: var(--text-base);
-      color: var(--color-text-muted);
-    }
-
-    .newsletter {
-      background-color: var(--color-surface-base);
-      border-top: var(--border-hair);
-      padding: var(--space-11) var(--space-section-x);
-    }
-    .newsletter__inner {
-      max-width: var(--container-prose);
-      margin-inline: auto;
-      text-align: center;
-    }
-    .newsletter__heading {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: var(--text-3xl);
-      color: var(--color-green);
-      margin: 0 0 var(--space-3);
-    }
-    .newsletter__sub {
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      color: var(--color-text-muted);
-      margin: 0 0 var(--space-6);
-    }
-    .newsletter__form {
-      display: flex;
-      gap: var(--space-3);
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .newsletter__input {
-      flex: 1 1 18rem;
-      max-width: 22rem;
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      color: var(--color-text);
-      background: var(--color-surface-card);
-      border: var(--border-hair);
-      padding: var(--space-3) var(--space-4);
-    }
-    .newsletter__input:focus { outline: none; border-color: var(--color-gold); }
-    .newsletter__btn {
-      font-family: var(--font-body);
-      font-size: var(--text-sm);
-      letter-spacing: var(--tracking-wide);
-      color: var(--color-green);
-      background: transparent;
-      border: 1px solid var(--color-gold);
-      padding: var(--space-3) var(--space-6);
-      cursor: pointer;
-      transition: var(--transition-colors);
-    }
-    .newsletter__btn:hover {
-      background: var(--color-green);
-      color: var(--color-text-invert);
-      border-color: var(--color-green);
-    }
-    .newsletter__btn:disabled { opacity: 0.5; cursor: default; }
-    .newsletter__msg {
-      margin: var(--space-5) 0 0;
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: var(--text-lg);
-      color: var(--color-green);
-      min-height: 1.4em;
-    }
-    .newsletter__msg--err { color: var(--color-error); }
-  </style>
 </head>
 
 <body>
@@ -181,96 +83,71 @@
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" class="journal-page">
 
-    <!-- ============================================================
-         PAGE HEADER
-         ============================================================ -->
-    <section class="journal-header" aria-labelledby="journal-heading">
-      <div class="journal-header__inner reveal">
-        <p class="journal-header__eyebrow">The Journal</p>
-        <h1 class="journal-title" id="journal-heading">
-          A case, written <em>slowly</em>.
-        </h1>
-        <p class="journal-description" data-journal-description>
-          Essays, reflections, and letters on wisdom, scripture, and the
-          long patience of a life lived attentively.
-        </p>
-      </div>
-      <hr class="journal-rule" aria-hidden="true" />
-    </section>
+    <!-- Page header -->
+    <header class="journal-header">
+      <h1 class="journal-title">Journal</h1>
+      <p class="journal-subtitle" data-journal-description>
+        Essays, reflections, and letters on wisdom, faith, and scripture.
+      </p>
+    </header>
 
-    <!-- ============================================================
-         SEARCH
-         ============================================================ -->
+    <!-- Category filter -->
+    <ul class="filter-tabs" data-filter-tabs role="tablist" aria-label="Filter essays by category">
+      <li><button class="filter-tab is-active" data-category="all" role="tab" aria-selected="true" type="button">All</button></li>
+      <li><button class="filter-tab" data-category="Essay" role="tab" aria-selected="false" type="button">Essay</button></li>
+      <li><button class="filter-tab" data-category="Reflection" role="tab" aria-selected="false" type="button">Reflection</button></li>
+      <li><button class="filter-tab" data-category="Letter" role="tab" aria-selected="false" type="button">Letter</button></li>
+      <li><button class="filter-tab" data-category="Study" role="tab" aria-selected="false" type="button">Study</button></li>
+    </ul>
+
+    <!-- Search -->
     <div class="journal-search">
-      <div class="journal-search__field">
-        <label class="sr-only" for="journal-search-input">Search the journal</label>
-        <input
-          type="search"
-          id="journal-search-input"
-          class="journal-search__input"
-          placeholder="Search the journal…"
-          autocomplete="off"
-          data-journal-search
-        />
-        <p class="journal-search__count" data-search-count hidden></p>
-      </div>
+      <label class="sr-only" for="journal-search-input">Search the journal</label>
+      <input
+        type="search"
+        id="journal-search-input"
+        class="journal-search-input"
+        placeholder="Search the journal…"
+        autocomplete="off"
+        data-journal-search
+      />
+      <p class="journal-search-count" data-search-count hidden></p>
     </div>
 
-    <!-- ============================================================
-         CATEGORY FILTER
-         ============================================================ -->
-    <nav class="filter-bar" aria-label="Filter essays by category">
-      <ul class="filter-tabs" data-filter-tabs role="tablist">
-        <li><button class="filter-tab is-active" data-category="all" role="tab" aria-selected="true" type="button">All</button></li>
-        <li><button class="filter-tab" data-category="Essay" role="tab" aria-selected="false" type="button">Essay</button></li>
-        <li><button class="filter-tab" data-category="Reflection" role="tab" aria-selected="false" type="button">Reflection</button></li>
-        <li><button class="filter-tab" data-category="Letter" role="tab" aria-selected="false" type="button">Letter</button></li>
-        <li><button class="filter-tab" data-category="Study" role="tab" aria-selected="false" type="button">Study</button></li>
+    <!-- Articles -->
+    <section aria-live="polite">
+      <ul class="article-list" data-posts-grid>
+        <!-- populated by script -->
       </ul>
-    </nav>
 
-    <!-- ============================================================
-         POSTS
-         ============================================================ -->
-    <section class="posts-section" aria-live="polite">
-      <div class="posts-section__inner">
-        <div class="posts-grid" data-posts-grid>
-          <!-- populated by script -->
-        </div>
-
-        <nav class="pagination" data-pagination aria-label="Pagination" hidden>
-          <a class="pagination__link" data-page-prev href="#">← Older letters</a>
-          <span class="pagination__current" data-page-current>Page 1</span>
-          <a class="pagination__link" data-page-next href="#">Newer letters →</a>
-        </nav>
-      </div>
+      <nav class="pagination" data-pagination aria-label="Pagination" hidden>
+        <a class="pagination__link" data-page-prev href="#">← Older letters</a>
+        <span class="pagination__current" data-page-current>Page 1</span>
+        <a class="pagination__link" data-page-next href="#">Newer letters →</a>
+      </nav>
     </section>
 
-    <!-- ============================================================
-         NEWSLETTER
-         ============================================================ -->
-    <section class="newsletter" aria-labelledby="newsletter-heading">
-      <div class="newsletter__inner reveal">
-        <h2 class="newsletter__heading" id="newsletter-heading">Stay close to the source.</h2>
-        <p class="newsletter__sub">New essays, delivered slowly.</p>
-        <form class="newsletter__form" data-newsletter novalidate>
-          <label class="sr-only" for="newsletter-email">Email address</label>
-          <input
-            type="email"
-            id="newsletter-email"
-            class="newsletter__input"
-            name="email"
-            placeholder="you@example.com"
-            autocomplete="email"
-            required
-            data-newsletter-input
-          />
-          <button type="submit" class="newsletter__btn" data-newsletter-btn>Subscribe</button>
-        </form>
-        <p class="newsletter__msg" data-newsletter-msg role="status" aria-live="polite"></p>
-      </div>
+    <!-- Newsletter -->
+    <section class="newsletter-section" aria-labelledby="newsletter-heading">
+      <h2 class="newsletter-section__heading" id="newsletter-heading">Get new essays by email</h2>
+      <p class="newsletter-section__sub">No spam. Unsubscribe anytime.</p>
+      <form class="newsletter-section__form" data-newsletter novalidate>
+        <label class="sr-only" for="newsletter-email">Email address</label>
+        <input
+          type="email"
+          id="newsletter-email"
+          class="newsletter-section__input"
+          name="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+          data-newsletter-input
+        />
+        <button type="submit" class="btn btn--ghost" data-newsletter-btn>Subscribe</button>
+      </form>
+      <p class="newsletter-section__msg" data-newsletter-msg role="status" aria-live="polite"></p>
     </section>
 
   </main>
@@ -280,35 +157,16 @@
        ============================================================ -->
   <footer class="footer" role="contentinfo">
     <div class="footer__inner">
-      <div>
+      <div class="footer__brand-block">
         <div class="footer__brand" data-site-name></div>
         <p class="footer__tagline" data-footer-tagline></p>
       </div>
-
-      <div>
-        <p class="footer__heading">Read</p>
-        <div class="footer__list">
-          <a class="footer__link" href="/">Journal</a>
-          <a class="footer__link" href="/about.html">About</a>
-        </div>
-      </div>
-
-      <div>
-        <p class="footer__heading">Shop</p>
-        <div class="footer__list">
-          <a class="footer__link" href="/shop/">All products</a>
-          <a class="footer__link" href="/cart/">Cart</a>
-        </div>
-      </div>
-
-      <div>
-        <p class="footer__heading">Elsewhere</p>
-        <div class="footer__list">
-          <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
-          <a class="footer__link" data-social="substack" href="#" rel="noopener" hidden>Substack</a>
-          <a class="footer__link" href="mailto:hello@acaseforwisdom.com">Write</a>
-        </div>
-      </div>
+      <nav class="footer__links" aria-label="Footer">
+        <a class="footer__link" href="/">Journal</a>
+        <a class="footer__link" href="/about.html">About</a>
+        <a class="footer__link" href="/shop/">Shop</a>
+        <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+      </nav>
     </div>
 
     <div class="footer__bottom">
@@ -317,7 +175,7 @@
     </div>
   </footer>
 
-  <!-- Mobile drawer + reveal observer -->
+  <!-- Mobile drawer -->
   <script type="module">
     document.querySelector("[data-year]").textContent = new Date().getFullYear();
 
@@ -331,24 +189,6 @@
         toggle.setAttribute("aria-expanded", String(!open));
       });
     }
-
-    window.__revealObserve = (root = document) => {
-      const reveals = root.querySelectorAll(".reveal:not(.is-visible)");
-      if ("IntersectionObserver" in window && reveals.length) {
-        const io = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              io.unobserve(entry.target);
-            }
-          });
-        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
-        reveals.forEach((el) => io.observe(el));
-      } else {
-        reveals.forEach((el) => el.classList.add("is-visible"));
-      }
-    };
-    window.__revealObserve();
   </script>
 
   <!-- Journal page logic -->
@@ -368,7 +208,6 @@
         prevLink: document.querySelector("[data-page-prev]"),
         nextLink: document.querySelector("[data-page-next]"),
         filterTabs: document.querySelectorAll("[data-filter-tabs] .filter-tab"),
-        descriptionEl: document.querySelector("[data-journal-description]"),
         searchInput: document.querySelector("[data-journal-search]"),
         searchCount: document.querySelector("[data-search-count]"),
       });
@@ -382,10 +221,10 @@
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
           const email = (input.value || "").trim();
-          msg.classList.remove("newsletter__msg--err");
+          msg.classList.remove("is-error");
           if (!email || !input.checkValidity()) {
             msg.textContent = "Please enter a valid email address.";
-            msg.classList.add("newsletter__msg--err");
+            msg.classList.add("is-error");
             return;
           }
           btn.disabled = true;
@@ -396,7 +235,7 @@
           } catch (err) {
             btn.disabled = false;
             msg.textContent = "Something went wrong — please try again in a moment.";
-            msg.classList.add("newsletter__msg--err");
+            msg.classList.add("is-error");
           }
         });
       }

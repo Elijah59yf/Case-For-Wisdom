@@ -39,6 +39,30 @@ function rowToSlide(r) {
   if (!r) return null;
   return { ...r, active: !!r.active };
 }
+function rowToEvent(r) {
+  if (!r) return null;
+  return {
+    ...r,
+    is_online: !!r.is_online,
+    is_inperson: !!r.is_inperson,
+    is_paid: !!r.is_paid,
+    registration_open: r.registration_open == null ? true : !!r.registration_open,
+    price: r.price == null ? 0 : Number(r.price),
+    capacity: r.capacity == null ? null : Number(r.capacity),
+    published: !!r.published,
+  };
+}
+function rowToRegistration(r) {
+  if (!r) return null;
+  return {
+    ...r,
+    paid: !!r.paid,
+    attended: !!r.attended,
+    amount_paid: r.amount_paid == null ? 0 : Number(r.amount_paid),
+    is_online: r.is_online == null ? r.is_online : !!r.is_online,
+    is_inperson: r.is_inperson == null ? r.is_inperson : !!r.is_inperson,
+  };
+}
 
 // ── posts ────────────────────────────────────────────────────────────
 async function getPosts(opts = {}) {
@@ -97,6 +121,157 @@ async function updatePost(id, data) {
 async function deletePost(id) {
   await pool().query("DELETE FROM posts WHERE id = ?", [id]);
   return { id };
+}
+
+// ── events ───────────────────────────────────────────────────────────
+// getEvents returns published events that haven't finished yet — anything
+// from the start of today onward — ordered soonest-first.
+async function getEvents(opts = {}) {
+  const { limit = 50, offset = 0 } = opts;
+  const [rows] = await pool().query(
+    "SELECT * FROM events WHERE published = 1 AND event_date >= CURDATE() ORDER BY event_date ASC LIMIT ? OFFSET ?",
+    [Number(limit), Number(offset)]
+  );
+  return rows.map(rowToEvent);
+}
+async function getAllEvents(opts = {}) {
+  const { limit = 100, offset = 0 } = opts;
+  const [rows] = await pool().query(
+    "SELECT * FROM events ORDER BY event_date DESC LIMIT ? OFFSET ?",
+    [Number(limit), Number(offset)]
+  );
+  return rows.map(rowToEvent);
+}
+async function getPastEvents() {
+  const [rows] = await pool().query(
+    "SELECT * FROM events WHERE published = 1 AND event_date < NOW() ORDER BY event_date DESC LIMIT 20"
+  );
+  return rows.map(rowToEvent);
+}
+async function getEventBySlug(slug) {
+  const [rows] = await pool().query("SELECT * FROM events WHERE slug = ? LIMIT 1", [slug]);
+  return rowToEvent(rows[0]);
+}
+async function getEventById(id) {
+  const [rows] = await pool().query("SELECT * FROM events WHERE id = ? LIMIT 1", [id]);
+  return rowToEvent(rows[0]);
+}
+async function createEvent(data) {
+  const {
+    id, title, slug, description = null, event_date, end_date = null,
+    location = null, location_url = null, is_online = false, is_inperson = false,
+    is_paid = false, price = 0, capacity = null, registration_open = true,
+    cover_url = null, published = false,
+  } = data;
+  await pool().query(
+    `INSERT INTO events
+       (id, title, slug, description, event_date, end_date, location, location_url,
+        is_online, is_inperson, is_paid, price, capacity, registration_open, cover_url, published)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [id, title, slug, description, event_date, end_date, location, location_url,
+     is_online ? 1 : 0, is_inperson ? 1 : 0, is_paid ? 1 : 0, Number(price) || 0,
+     capacity == null ? null : Number(capacity), registration_open ? 1 : 0,
+     cover_url, published ? 1 : 0]
+  );
+  return getEventById(id);
+}
+async function updateEvent(id, data) {
+  const fields = [];
+  const values = [];
+  for (const k of ["title", "slug", "description", "event_date", "end_date", "location", "location_url", "cover_url"]) {
+    if (k in data) { fields.push(`${k} = ?`); values.push(data[k]); }
+  }
+  for (const k of ["is_online", "is_inperson", "is_paid", "registration_open", "published"]) {
+    if (k in data) { fields.push(`${k} = ?`); values.push(data[k] ? 1 : 0); }
+  }
+  if ("price" in data) { fields.push("price = ?"); values.push(Number(data.price) || 0); }
+  if ("capacity" in data) { fields.push("capacity = ?"); values.push(data.capacity == null ? null : Number(data.capacity)); }
+  if (!fields.length) return getEventById(id);
+  values.push(id);
+  await pool().query(`UPDATE events SET ${fields.join(", ")} WHERE id = ?`, values);
+  return getEventById(id);
+}
+async function deleteEvent(id) {
+  await pool().query("DELETE FROM events WHERE id = ?", [id]);
+  return { id };
+}
+
+// ── event registrations ───────────────────────────────────────────────
+async function getEventRegistrations(eventId) {
+  const [rows] = await pool().query(
+    "SELECT * FROM event_registrations WHERE event_id = ? ORDER BY created_at DESC",
+    [eventId]
+  );
+  return rows.map(rowToRegistration);
+}
+async function getRegistrationByTicketRef(ticketRef) {
+  const [rows] = await pool().query(
+    `SELECT r.*,
+            e.title       AS event_title,
+            e.slug        AS event_slug,
+            e.event_date  AS event_date,
+            e.location    AS location,
+            e.location_url AS location_url,
+            e.is_online   AS is_online
+       FROM event_registrations r
+       JOIN events e ON e.id = r.event_id
+      WHERE r.ticket_ref = ? LIMIT 1`,
+    [ticketRef]
+  );
+  return rowToRegistration(rows[0]);
+}
+async function createRegistration({ eventId, ticketRef, name, email, paid = false, amountPaid = 0 }) {
+  const id = randomUUID();
+  await pool().query(
+    `INSERT INTO event_registrations (id, event_id, ticket_ref, name, email, paid, amount_paid)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [id, eventId, ticketRef, name, email, paid ? 1 : 0, Number(amountPaid) || 0]
+  );
+  const [rows] = await pool().query("SELECT * FROM event_registrations WHERE id = ? LIMIT 1", [id]);
+  return rowToRegistration(rows[0]);
+}
+async function markAttended(ticketRef, attended = true) {
+  await pool().query(
+    "UPDATE event_registrations SET attended = ?, checked_in_at = ? WHERE ticket_ref = ?",
+    [attended ? 1 : 0, attended ? new Date() : null, ticketRef]
+  );
+  return getRegistrationByTicketRef(ticketRef);
+}
+// Mark attendance from a join-link visit — only if not already checked in, so
+// an existing check-in time (e.g. set by an admin at the door) is preserved.
+async function markAttendedByTicketRef(ticketRef) {
+  await pool().query(
+    "UPDATE event_registrations SET attended = 1, checked_in_at = ? WHERE ticket_ref = ? AND attended = 0",
+    [new Date(), ticketRef]
+  );
+  return getRegistrationByTicketRef(ticketRef);
+}
+async function countRegistrations(eventId) {
+  const [[{ total }]] = await pool().query(
+    "SELECT COUNT(*) AS total FROM event_registrations WHERE event_id = ?",
+    [eventId]
+  );
+  return Number(total) || 0;
+}
+async function getEventAttendanceStats(eventId) {
+  const [[row]] = await pool().query(
+    `SELECT COUNT(*) AS total, COALESCE(SUM(attended), 0) AS attended
+       FROM event_registrations WHERE event_id = ?`,
+    [eventId]
+  );
+  const event = await getEventById(eventId);
+  return {
+    total: Number(row.total) || 0,
+    attended: Number(row.attended) || 0,
+    capacity: event ? event.capacity : null,
+  };
+}
+async function getRegistrationByEventAndEmail(eventId, email) {
+  const [rows] = await pool().query(
+    "SELECT * FROM event_registrations WHERE event_id = ? AND email = ? LIMIT 1",
+    [eventId, email]
+  );
+  return rowToRegistration(rows[0]);
 }
 
 // ── products ─────────────────────────────────────────────────────────
@@ -394,6 +569,10 @@ async function getSubscribers() {
 
 export default {
   getPosts, getAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
+  getEvents, getAllEvents, getPastEvents, getEventBySlug, getEventById, createEvent, updateEvent, deleteEvent,
+  getEventRegistrations, getRegistrationByTicketRef, createRegistration, markAttended,
+  markAttendedByTicketRef,
+  countRegistrations, getEventAttendanceStats, getRegistrationByEventAndEmail,
   getProducts, getAllProducts, getProductById, createProduct, updateProduct, deleteProduct,
   createOrder, getOrders, getOrderById, updateOrderStatus,
   getSettings, updateSetting,

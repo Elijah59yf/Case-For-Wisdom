@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#2B3E1E" />
 
-  <title>Product — A Case for Wisdom</title>
-  <meta name="description" content="A considered object from A Case for Wisdom. All prices in CAD." />
+  <title>Product | A Case for Wisdom</title>
+  <meta name="description" content="A product from A Case for Wisdom. All prices in CAD." />
 
   <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
   <link rel="apple-touch-icon" href="/assets/images/og-image.jpg" />
@@ -105,32 +105,16 @@
        ============================================================ -->
   <footer class="footer" role="contentinfo">
     <div class="footer__inner">
-      <div>
+      <div class="footer__brand-block">
         <div class="footer__brand" data-site-name></div>
         <p class="footer__tagline" data-footer-tagline></p>
       </div>
-      <div>
-        <p class="footer__heading">Read</p>
-        <div class="footer__list">
-          <a class="footer__link" href="/">Journal</a>
-          <a class="footer__link" href="/about.html">About</a>
-        </div>
-      </div>
-      <div>
-        <p class="footer__heading">Shop</p>
-        <div class="footer__list">
-          <a class="footer__link" href="/shop/">All products</a>
-          <a class="footer__link" href="/cart/">Cart</a>
-        </div>
-      </div>
-      <div>
-        <p class="footer__heading">Elsewhere</p>
-        <div class="footer__list">
-          <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
-          <a class="footer__link" data-social="substack" href="#" rel="noopener" hidden>Substack</a>
-          <a class="footer__link" href="mailto:hello@acaseforwisdom.com">Write</a>
-        </div>
-      </div>
+      <nav class="footer__links" aria-label="Footer">
+        <a class="footer__link" href="/">Journal</a>
+        <a class="footer__link" href="/about.html">About</a>
+        <a class="footer__link" href="/shop/">Shop</a>
+        <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+      </nav>
     </div>
     <div class="footer__bottom">
       <span>© <span data-year>2026</span> <span data-site-name></span> — <span data-footer-copy></span></span>
@@ -176,7 +160,7 @@
     }
 
     function descToHtml(text) {
-      if (!text) return `<p>A considered object, described soon.</p>`;
+      if (!text) return `<p>No description yet.</p>`;
       return String(text)
         .split(/\n{2,}/)
         .map((para) => `<p>${escapeHTML(para.trim()).replace(/\n/g, "<br/>")}</p>`)
@@ -210,7 +194,7 @@
         return;
       }
 
-      document.title = `${product.name || "Product"} — A Case for Wisdom`;
+      document.title = `${product.name || "Product"} | A Case for Wisdom`;
 
       // Category, name, price
       document.querySelector("[data-category]").textContent = product.category || "Object";

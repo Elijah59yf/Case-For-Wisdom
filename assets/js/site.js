@@ -7,7 +7,8 @@ import { getCartCount } from "/assets/js/cart.js";
 const FALLBACK_NAV = [
   { label: "Journal", url: "/", visible: true },
   { label: "About",   url: "/about", visible: true },
-  { label: "Shop",    url: "/shop", visible: true }
+  { label: "Shop",    url: "/shop", visible: true },
+  { label: "Events",  url: "/events.html", visible: true }
 ];
 
 const FALLBACK_SETTINGS = {

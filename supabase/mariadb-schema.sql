@@ -80,6 +80,56 @@ CREATE TABLE IF NOT EXISTS subscribers (
   created_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Events --------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS events (
+  id            CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+  title         TEXT           NOT NULL,
+  slug          VARCHAR(255)   NOT NULL UNIQUE,
+  description   TEXT,
+  event_date    DATETIME       NOT NULL,
+  end_date      DATETIME,
+  location      TEXT,
+  location_url  VARCHAR(1000),
+  is_online     TINYINT(1)     NOT NULL DEFAULT 0,
+  is_inperson   TINYINT(1)     NOT NULL DEFAULT 0,
+  -- Ticketing / registration columns. is_paid + price drive paid events;
+  -- capacity NULL means unlimited; registration_open lets an admin force-close.
+  is_paid           TINYINT(1)     NOT NULL DEFAULT 0,
+  price             DECIMAL(10,2)  NOT NULL DEFAULT 0.00,
+  capacity          INT            DEFAULT NULL,
+  registration_open TINYINT(1)     NOT NULL DEFAULT 1,
+  cover_url     TEXT,
+  published     TINYINT(1)     NOT NULL DEFAULT 0,
+  created_at    DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX events_published_date_idx (published, event_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- On an existing install these ALTERs add the ticketing columns to events.
+-- (Fresh installs already have them from the CREATE above; ignore "duplicate
+-- column" errors when re-applying.)
+-- ALTER TABLE events ADD COLUMN is_paid TINYINT(1) DEFAULT 0 AFTER is_inperson;
+-- ALTER TABLE events ADD COLUMN price DECIMAL(10,2) DEFAULT 0.00 AFTER is_paid;
+-- ALTER TABLE events ADD COLUMN capacity INT DEFAULT NULL AFTER price;            -- NULL = unlimited
+-- ALTER TABLE events ADD COLUMN registration_open TINYINT(1) DEFAULT 1 AFTER capacity; -- admin can force-close
+
+-- Event registrations / tickets -------------------------------------
+CREATE TABLE IF NOT EXISTS event_registrations (
+  id            CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+  event_id      CHAR(36) NOT NULL,
+  ticket_ref    VARCHAR(20) UNIQUE NOT NULL,
+  name          TEXT NOT NULL,
+  email         VARCHAR(500) NOT NULL,
+  paid          TINYINT(1) DEFAULT 0,
+  amount_paid   DECIMAL(10,2) DEFAULT 0.00,
+  attended      TINYINT(1) DEFAULT 0,
+  checked_in_at DATETIME DEFAULT NULL,
+  created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_reg_event (event_id),
+  INDEX idx_reg_ticket (ticket_ref),
+  INDEX idx_reg_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Admin users for local-dev JWT login -------------------------------
 CREATE TABLE IF NOT EXISTS admin_users (
   id             CHAR(36)      NOT NULL DEFAULT (UUID()) PRIMARY KEY,
@@ -122,6 +172,10 @@ INSERT INTO nav_items (label, url, position, visible)
 SELECT * FROM (SELECT 'Shop', '/shop', 3, 1) t
 WHERE NOT EXISTS (SELECT 1 FROM nav_items WHERE label = 'Shop');
 
+INSERT INTO nav_items (label, url, position, visible)
+SELECT * FROM (SELECT 'Events', '/events.html', 4, 1) t
+WHERE NOT EXISTS (SELECT 1 FROM nav_items WHERE label = 'Events');
+
 -- Performance indexes (production hardening) ------------------------------
 -- These cover the hot read paths: published-post listing, category filters,
 -- in-stock product listing, order-status queries, and nav ordering.
@@ -130,3 +184,4 @@ CREATE INDEX IF NOT EXISTS idx_posts_category      ON posts (category, published
 CREATE INDEX IF NOT EXISTS idx_products_in_stock   ON products (in_stock, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_orders_status       ON orders (status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_nav_position        ON nav_items (visible, position);
+CREATE INDEX IF NOT EXISTS idx_events_published     ON events (published, event_date);

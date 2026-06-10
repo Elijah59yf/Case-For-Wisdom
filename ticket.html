@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2B3E1E" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>Your ticket | A Case for Wisdom</title>
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+  <link rel="stylesheet" href="/assets/css/events.css" />
+
+  <!-- Client-side QR rendering for the on-screen ticket -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+
+  <a class="skip-link" href="#ticket-main">Skip to content</a>
+
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a class="nav__brand" href="/" aria-label="A Case for Wisdom — Home">
+        <span class="nav__brand-text" data-site-name></span>
+      </a>
+      <nav class="nav__links" aria-label="Primary" data-nav-links></nav>
+    </div>
+  </header>
+
+  <main id="ticket-main">
+    <div class="ticket-card" id="ticket-card" aria-busy="true">
+      <div class="ticket-header">
+        <div class="ticket-header__brand">A Case for Wisdom</div>
+        <div class="ticket-header__title">Loading your ticket…</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div class="footer__brand-block">
+        <div class="footer__brand" data-site-name></div>
+        <p class="footer__tagline" data-footer-tagline></p>
+      </div>
+      <nav class="footer__links" aria-label="Footer">
+        <a class="footer__link" href="/">Journal</a>
+        <a class="footer__link" href="/events.html">Events</a>
+      </nav>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> <span data-site-name></span></span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { loadNav, loadFooter } from "/assets/js/site.js";
+    import { getTicket, ApiError, IS_VPS, BASE_URL } from "/assets/js/lib/api.js";
+
+    const DATE_FMT = new Intl.DateTimeFormat("en-CA", {
+      weekday: "long", year: "numeric", month: "long", day: "numeric",
+      hour: "numeric", minute: "2-digit",
+    });
+
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    function formatWhen(iso) {
+      if (!iso) return "Date to be announced";
+      const d = new Date(iso);
+      return Number.isNaN(d.getTime()) ? String(iso) : DATE_FMT.format(d);
+    }
+
+    // PDF download links only exist on the VPS/Express target.
+    function pdfUrl(ref) {
+      return IS_VPS && BASE_URL ? `${BASE_URL}/tickets/${encodeURIComponent(ref)}` : null;
+    }
+
+    function renderMessage(headline, sub) {
+      document.getElementById("ticket-main").innerHTML = `
+        <div class="ticket-card" style="padding:0;">
+          <div class="ticket-header">
+            <div class="ticket-header__brand">A Case for Wisdom</div>
+            <div class="ticket-header__title">${escapeHTML(headline)}</div>
+          </div>
+          <div class="ticket-body">
+            <p class="ticket-row__value">${escapeHTML(sub)}</p>
+            <p style="margin-top:var(--space-4);"><a class="event-back" href="/events.html">← Back to Events</a></p>
+          </div>
+        </div>`;
+    }
+
+    function renderTicket(t) {
+      const when = formatWhen(t.event_date);
+      const loc = t.is_online
+        ? (t.location_url
+            ? `Online — <a href="${escapeHTML(t.location_url)}" target="_blank" rel="noopener">join link</a>`
+            : "Online event")
+        : escapeHTML(t.location || "Location to be announced");
+
+      const download = pdfUrl(t.ticket_ref);
+
+      document.getElementById("ticket-main").innerHTML = `
+        <div class="ticket-card" id="ticket-card">
+          <div class="ticket-header">
+            <div class="ticket-header__brand">A Case for Wisdom · Event Ticket</div>
+            <div class="ticket-header__title">${escapeHTML(t.event_title || "Event")}</div>
+          </div>
+          <div class="ticket-body">
+            <div class="ticket-row">
+              <div class="ticket-row__label">When</div>
+              <div class="ticket-row__value">${escapeHTML(when)}</div>
+            </div>
+            <div class="ticket-row">
+              <div class="ticket-row__label">Where</div>
+              <div class="ticket-row__value">${loc}</div>
+            </div>
+            <hr class="ticket-rule" />
+            <div class="ticket-row">
+              <div class="ticket-row__label">Attendee</div>
+              <div class="ticket-row__value">${escapeHTML(t.name || "—")}</div>
+            </div>
+            <div class="ticket-row">
+              <div class="ticket-row__label">Ticket reference</div>
+              <div class="ticket-row__value ticket-ref">${escapeHTML(t.ticket_ref)}</div>
+            </div>
+            <div class="ticket-qr">
+              <div id="qr"></div>
+              <div class="ticket-qr__label">Scan at entry</div>
+            </div>
+          </div>
+        </div>
+        <div class="ticket-actions">
+          ${download ? `<a class="event-register" href="${escapeHTML(download)}">Download PDF</a>` : ""}
+          <button type="button" class="event-calendar" id="print-btn" style="cursor:pointer;background:none;border:0;">Print</button>
+        </div>
+      `;
+
+      // Render QR client-side (encodes the ticket reference).
+      try {
+        new QRCode(document.getElementById("qr"), {
+          text: t.ticket_ref,
+          width: 160,
+          height: 160,
+          colorDark: "#2B3E1E",
+          colorLight: "#F5F0EA",
+        });
+      } catch (e) { console.warn("[ticket] QR render failed", e); }
+
+      document.getElementById("print-btn")?.addEventListener("click", () => window.print());
+      document.title = `Ticket ${t.ticket_ref} | A Case for Wisdom`;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      document.querySelectorAll("[data-year]").forEach((el) => { el.textContent = new Date().getFullYear(); });
+      loadNav();
+      loadFooter();
+
+      const ref = new URLSearchParams(window.location.search).get("ref");
+      if (!ref) { renderMessage("No ticket reference", "This link is missing a ticket reference."); return; }
+
+      try {
+        const t = await getTicket(ref);
+        renderTicket(t);
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 404) {
+          renderMessage("Ticket not found", "We couldn’t find a ticket with that reference.");
+        } else {
+          console.error("[ticket] load failed", err);
+          renderMessage("Couldn’t load ticket", "There was a problem reaching the server. Please try again.");
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

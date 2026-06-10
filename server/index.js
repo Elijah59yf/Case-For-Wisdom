@@ -13,6 +13,9 @@ import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
 import authRoutes from "./routes/auth.js";
 import postsRoutes from "./routes/posts.js";
+import eventsRoutes from "./routes/events.js";
+import ticketsRoutes from "./routes/tickets.js";
+import joinRoutes from "./routes/join.js";
 import productsRoutes from "./routes/products.js";
 import ordersRoutes from "./routes/orders.js";
 import checkoutRoutes from "./routes/checkout.js";
@@ -37,6 +40,16 @@ function validateEnv() {
 
   if (process.env.NODE_ENV === "production") {
     required.push("STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET");
+    // Email + ticketing essentials. RESEND is the primary email provider and
+    // FRONTEND_URL is needed to build the ticket link in registration replies.
+    required.push("RESEND_API_KEY", "FRONTEND_URL");
+  } else {
+    // In dev, warn (don't fail) so local registration still works without keys.
+    for (const k of ["RESEND_API_KEY", "FRONTEND_URL"]) {
+      if (!process.env[k] || !String(process.env[k]).trim()) {
+        console.warn(`[env] ${k} not set — using a dev default / email may be skipped`);
+      }
+    }
   }
 
   const missing = required.filter((k) => !process.env[k] || !String(process.env[k]).trim());
@@ -109,7 +122,7 @@ app.use("/api", apiLimiter);
 
 // Static uploads for the local upload adapter.
 const uploadDir = path.resolve(__dirname, process.env.UPLOAD_DIR || "./uploads");
-app.use("/uploads", express.static(uploadDir));
+app.use("/uploads", express.static(uploadDir, { maxAge: "7d" }));
 
 // ── Health check (no auth) ───────────────────────────────────────────────
 app.get("/api/health", (_req, res) => res.json({
@@ -122,6 +135,9 @@ app.get("/api/health", (_req, res) => res.json({
 app.use("/api/auth/login", loginLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postsRoutes);
+app.use("/api/events", eventsRoutes);
+app.use("/api/tickets", ticketsRoutes);
+app.use("/api/join", joinRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/checkout", checkoutRoutes);

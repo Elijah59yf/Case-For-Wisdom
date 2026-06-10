@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Products | A Case for Wisdom · Admin</title>
+  <title>Events | A Case for Wisdom · Admin</title>
 
   <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
 
@@ -36,8 +36,8 @@
     <nav class="admin-nav" aria-label="Admin">
       <a class="admin-nav__link" href="/admin/"><span class="admin-nav__dot"></span>Dashboard</a>
       <a class="admin-nav__link" href="/admin/posts/"><span class="admin-nav__dot"></span>Posts</a>
-      <a class="admin-nav__link is-active" href="/admin/products/" aria-current="page"><span class="admin-nav__dot"></span>Products</a>
-      <a class="admin-nav__link" href="/admin/events/"><span class="admin-nav__dot"></span>Events</a>
+      <a class="admin-nav__link" href="/admin/products/"><span class="admin-nav__dot"></span>Products</a>
+      <a class="admin-nav__link is-active" href="/admin/events/" aria-current="page"><span class="admin-nav__dot"></span>Events</a>
       <a class="admin-nav__link" href="/admin/admins/"><span class="admin-nav__dot"></span>Admins</a>
       <a class="admin-nav__link" href="/admin/media/"><span class="admin-nav__dot"></span>Media</a>
       <a class="admin-nav__link" href="/admin/settings/"><span class="admin-nav__dot"></span>Settings</a>
@@ -52,36 +52,35 @@
 
   <main class="admin-main">
     <div class="admin-pagehead">
-      <h1 class="admin-pagehead__title">Products</h1>
+      <h1 class="admin-pagehead__title">Events</h1>
       <div class="admin-pagehead__actions">
-        <a class="btn-admin-primary" href="/admin/products/new.html">New Product</a>
+        <a class="btn-admin-primary" href="/admin/events/new.html">New Event</a>
       </div>
     </div>
 
     <table class="admin-table">
       <thead>
         <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Category</th>
-          <th scope="col">Price</th>
-          <th scope="col">Stock</th>
+          <th scope="col">Title</th>
+          <th scope="col">Date</th>
+          <th scope="col">Type</th>
           <th scope="col">Status</th>
           <th scope="col"><span class="sr-only">Actions</span></th>
         </tr>
       </thead>
-      <tbody id="products-body">
-        <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td></tr>
-        <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td></tr>
-        <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td></tr>
+      <tbody id="events-body">
+        <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td></tr>
+        <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td></tr>
+        <tr><td><span class="sk sk-line"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td><td><span class="sk sk-line sk-line--sm"></span></td></tr>
       </tbody>
     </table>
   </main>
 
   <script type="module">
     import { isAuthenticated, signOut } from "/assets/js/auth.js";
-    import { adminGetProducts, adminUpdateProduct, adminDeleteProduct } from "/assets/js/lib/api.js";
+    import { adminGetEvents, adminUpdateEvent, adminDeleteEvent } from "/assets/js/lib/api.js";
 
-    // ── Auth guard (CLAUDE.md §11) ──────────────────────────────────
+    // ── Auth guard ──────────────────────────────────────────────────
     if (!(await isAuthenticated())) {
       window.location.replace("/admin/login.html");
     }
@@ -91,8 +90,10 @@
       window.location.replace("/admin/login.html");
     });
 
-    const tbody = document.getElementById("products-body");
-    const PRICE_FMT = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" });
+    const tbody = document.getElementById("events-body");
+    const DATE_FMT = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+    });
 
     function escapeHTML(s) {
       return String(s ?? "")
@@ -100,57 +101,63 @@
         .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
     }
 
+    function typeLabel(ev) {
+      if (ev.is_online && ev.is_inperson) return "Both";
+      if (ev.is_online) return "Online";
+      if (ev.is_inperson) return "In Person";
+      return "—";
+    }
+
     function showEmpty() {
-      tbody.innerHTML = `<tr class="admin-empty"><td colspan="6">No products yet.</td></tr>`;
+      tbody.innerHTML = `<tr class="admin-empty"><td colspan="5">No events yet.</td></tr>`;
     }
 
-    function badgeHTML(inStock) {
-      return inStock
-        ? `<span class="badge badge--published">In stock</span>`
-        : `<span class="badge badge--draft">Out of stock</span>`;
+    function badgeHTML(published) {
+      return published
+        ? `<span class="badge badge--published">Published</span>`
+        : `<span class="badge badge--draft">Draft</span>`;
     }
 
-    function rowHTML(p) {
-      const inStock = !!p.in_stock;
-      const price = Number.isFinite(Number(p.price)) ? PRICE_FMT.format(Number(p.price)) : "—";
-      const stock = p.stock_count == null ? "—" : String(p.stock_count);
-      const toggleLabel = inStock ? "Mark out" : "Mark in";
+    function rowHTML(ev) {
+      const published = !!ev.published;
+      const date = ev.event_date ? DATE_FMT.format(new Date(ev.event_date)) : "—";
+      const toggleLabel = published ? "Unpublish" : "Publish";
       return `
-        <td>${escapeHTML(p.name || "(untitled)")}</td>
-        <td>${escapeHTML(p.category || "—")}</td>
-        <td>${escapeHTML(price)}</td>
-        <td>${escapeHTML(stock)}</td>
-        <td data-cell="status">${badgeHTML(inStock)}</td>
+        <td>${escapeHTML(ev.title || "(untitled)")}</td>
+        <td>${escapeHTML(date)}</td>
+        <td>${escapeHTML(typeLabel(ev))}</td>
+        <td data-cell="status">${badgeHTML(published)}</td>
         <td>
           <div class="admin-table__actions">
-            <a class="btn-admin-ghost btn-admin-sm" href="/admin/products/edit.html?id=${encodeURIComponent(p.id)}">Edit</a>
+            <a class="btn-admin-ghost btn-admin-sm" href="/admin/events/edit.html?id=${encodeURIComponent(ev.id)}">Edit</a>
+            <a class="btn-admin-ghost btn-admin-sm" href="/admin/events/registrations.html?id=${encodeURIComponent(ev.id)}">Registrations</a>
             <button type="button" class="btn-admin-ghost btn-admin-sm" data-action="toggle">${toggleLabel}</button>
             <button type="button" class="btn-admin-danger btn-admin-sm" data-action="delete">Delete</button>
           </div>
         </td>`;
     }
 
-    function makeRow(p) {
+    function makeRow(ev) {
       const tr = document.createElement("tr");
-      tr.dataset.id = p.id;
-      tr.dataset.inStock = String(!!p.in_stock);
-      tr.innerHTML = rowHTML(p);
+      tr.dataset.id = ev.id;
+      tr.dataset.published = String(!!ev.published);
+      tr.innerHTML = rowHTML(ev);
       tr.querySelector('[data-action="toggle"]').addEventListener("click", (e) => toggle(tr, e.currentTarget));
       tr.querySelector('[data-action="delete"]').addEventListener("click", (e) => remove(tr, e.currentTarget));
       return tr;
     }
 
     async function toggle(tr, btn) {
-      const next = tr.dataset.inStock !== "true";
+      const next = tr.dataset.published !== "true";
       const original = btn.textContent;
       btn.disabled = true;
       try {
-        await adminUpdateProduct(tr.dataset.id, { in_stock: next });
-        tr.dataset.inStock = String(next);
+        await adminUpdateEvent(tr.dataset.id, { published: next });
+        tr.dataset.published = String(next);
         tr.querySelector('[data-cell="status"]').innerHTML = badgeHTML(next);
-        btn.textContent = next ? "Mark out" : "Mark in";
+        btn.textContent = next ? "Unpublish" : "Publish";
       } catch (err) {
-        alert(err?.message || "Could not update the product.");
+        alert(err?.message || "Could not update the event.");
         btn.textContent = original;
       } finally {
         btn.disabled = false;
@@ -158,28 +165,28 @@
     }
 
     async function remove(tr, btn) {
-      const name = tr.querySelector("td")?.textContent || "this product";
-      if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+      const title = tr.querySelector("td")?.textContent || "this event";
+      if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
       btn.disabled = true;
       try {
-        await adminDeleteProduct(tr.dataset.id);
+        await adminDeleteEvent(tr.dataset.id);
         tr.remove();
         if (!tbody.querySelector("tr[data-id]")) showEmpty();
       } catch (err) {
-        alert(err?.message || "Could not delete the product.");
+        alert(err?.message || "Could not delete the event.");
         btn.disabled = false;
       }
     }
 
     (async function init() {
       try {
-        const res = await adminGetProducts();
-        const products = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
-        if (!products.length) { showEmpty(); return; }
-        tbody.replaceChildren(...products.map(makeRow));
+        const res = await adminGetEvents();
+        const events = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+        if (!events.length) { showEmpty(); return; }
+        tbody.replaceChildren(...events.map(makeRow));
       } catch (err) {
-        console.error("[products] load failed", err);
-        tbody.innerHTML = `<tr class="admin-empty"><td colspan="6">Could not load products. Please refresh.</td></tr>`;
+        console.error("[events] load failed", err);
+        tbody.innerHTML = `<tr class="admin-empty"><td colspan="5">Could not load events. Please refresh.</td></tr>`;
       }
     })();
   </script>

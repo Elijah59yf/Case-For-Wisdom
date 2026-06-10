@@ -82,6 +82,58 @@ create table if not exists hero_slides (
 create index if not exists hero_slides_active_position_idx
   on hero_slides (active, position);
 
+-- events --------------------------------------------------------------
+create table if not exists events (
+  id            uuid primary key default gen_random_uuid(),
+  title         text not null,
+  slug          text not null unique,
+  description   text,
+  event_date    timestamptz not null,
+  end_date      timestamptz,
+  location      text,
+  location_url  text,
+  is_online     boolean not null default false,
+  is_inperson   boolean not null default false,
+  -- Ticketing / registration. capacity null = unlimited; registration_open
+  -- lets an admin force-close sign-ups.
+  is_paid            boolean not null default false,
+  price              numeric(10,2) not null default 0.00,
+  capacity           integer default null,
+  registration_open  boolean not null default true,
+  cover_url     text,
+  published     boolean not null default false,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+create index if not exists events_published_date_idx
+  on events (published, event_date);
+
+-- On an existing install, add the ticketing columns:
+alter table events add column if not exists is_paid boolean not null default false;
+alter table events add column if not exists price numeric(10,2) not null default 0.00;
+alter table events add column if not exists capacity integer default null;
+alter table events add column if not exists registration_open boolean not null default true;
+
+-- event_registrations / tickets ---------------------------------------
+-- Public INSERT (anyone can register) and a narrow public SELECT scoped to a
+-- single ticket_ref are governed in policies.sql. Admin (authenticated) gets
+-- full read/update.
+create table if not exists event_registrations (
+  id            uuid primary key default gen_random_uuid(),
+  event_id      uuid not null references events (id) on delete cascade,
+  ticket_ref    varchar(20) not null unique,
+  name          text not null,
+  email         varchar(500) not null,
+  paid          boolean not null default false,
+  amount_paid   numeric(10,2) not null default 0.00,
+  attended      boolean not null default false,
+  checked_in_at timestamptz default null,
+  created_at    timestamptz not null default now()
+);
+create index if not exists idx_reg_event  on event_registrations (event_id);
+create index if not exists idx_reg_ticket on event_registrations (ticket_ref);
+create index if not exists idx_reg_email  on event_registrations (email);
+
 -- subscribers ---------------------------------------------------------
 -- Newsletter signups from the public journal. Inserts are public (anon)
 -- on Target A; reads are admin-only. Kept in sync with mariadb-schema.sql.
@@ -132,3 +184,4 @@ alter table site_settings  enable row level security;
 alter table nav_items      enable row level security;
 alter table hero_slides    enable row level security;
 alter table subscribers    enable row level security;
+alter table events         enable row level security;

@@ -7,15 +7,16 @@
 :root {
 
   /* ---------- 1. Color — Surfaces ---------- */
-  /* Three-tier warm surface system. Cream is the page; sand alternates
-     sections; oat tints cards. Never mix more than two tiers on a screen. */
-  --color-surface-base:  #F5F0EA;   /* cream  — page background */
-  --color-surface-mid:   #E8DCC7;   /* sand   — alternating sections */
-  --color-surface-card:  #D4B895;   /* oat    — subtle card tint */
+  /* Single warm surface. Cream is the only background colour used — no
+     section alternation, no tinted cards. A literary magazine reads as one
+     continuous page. */
+  --color-surface-base:  #F5F0EA;   /* cream  — the page background */
+  --color-surface-mid:   #F5F0EA;   /* same as base — sections no longer alternate */
+  --color-surface-card:  #F5F0EA;   /* same as base — no oat cards */
 
   /* ---------- 2. Color — Brand ---------- */
   --color-green:    #2B3E1E;   /* primary — headlines, nav, footer */
-  --color-gold:     #B8953A;   /* accent  — borders, CTAs, underlines. NEVER a fill. */
+  --color-gold:     #B8953A;   /* accent  — used sparingly */
   --color-teal:     #4A7B82;   /* secondary accent — used sparingly */
 
   /* Tonal variations for hover / disabled / focus states */
@@ -42,7 +43,7 @@
   --color-border-soft:   rgba(43, 62, 30, 0.20);
   --color-border-strong: rgba(43, 62, 30, 0.45);
   --color-border-gold:   rgba(184, 149, 58, 0.55); /* gold accent rule */
-  --color-rule:          var(--color-border-soft);  /* generic hairline border / divider */
+  --color-rule:          rgba(43, 62, 30, 0.15);    /* hairline dividers only */
 
   /* ---------- 6. Color — Overlays & Scrim ---------- */
   --color-scrim-soft: rgba(26, 26, 26, 0.40);
@@ -127,16 +128,11 @@
   --bp-xl:  80rem;     /* 1280 */
   --bp-2xl: 96rem;     /* 1536 */
 
-  /* ---------- 16. Border radius — Organic, never uniformly rounded ---------- */
+  /* ---------- 16. Border radius — restrained, three steps only ---------- */
+  /* No asymmetric radii anywhere. Corners are barely there. */
   --radius-none:  0;
-  --radius-xs:    2px;
-  --radius-sm:    4px;
-  --radius-md:    8px;
-  --radius-lg:    16px;
-  --radius-xl:    24px;
-  --radius-pill:  999px;
-  --radius-organic-a: 24px 4px 24px 4px;   /* asymmetric — card variant A */
-  --radius-organic-b: 4px 24px 4px 24px;   /* asymmetric — card variant B */
+  --radius-sm:    3px;
+  --radius-md:    6px;
 
   /* ---------- 17. Borders — Hairlines (gold rules and dividers) ---------- */
   --border-hair:   1px solid var(--color-border-hair);

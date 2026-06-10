@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2B3E1E" />
+
+  <title>Events | A Case for Wisdom</title>
+  <meta name="description" content="Gatherings, conversations, and occasions to meet in person and online." />
+
+  <link rel="canonical" href="https://acaseforwisdom.com/events.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Events | A Case for Wisdom" />
+  <meta property="og:description" content="Gatherings, conversations, and occasions to meet in person and online." />
+  <meta property="og:image" content="/assets/images/og-image.jpg" />
+  <meta property="og:url" content="https://acaseforwisdom.com/events.html" />
+  <meta property="og:site_name" content="A Case for Wisdom" />
+  <meta property="og:locale" content="en_CA" />
+
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico" />
+  <link rel="apple-touch-icon" href="/assets/images/og-image.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+  <link rel="stylesheet" href="/assets/css/events.css" />
+</head>
+
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a class="nav__brand" href="/" aria-label="A Case for Wisdom — Home">
+        <svg class="nav__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.55"/>
+          <path d="M32 14 V50" stroke="currentColor" stroke-width="1.25" fill="none"/>
+          <path d="M32 22 Q24 24 22 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 22 Q40 24 42 32" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 30 Q26 32 24 40" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M32 30 Q38 32 40 40" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M14 50 Q22 46 32 50 T 50 50" stroke="#B8953A" stroke-width="1.25" fill="none"/>
+        </svg>
+        <span class="nav__brand-text" data-site-name></span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary" data-nav-links></nav>
+
+      <div class="nav__actions">
+        <a class="nav__cart" href="/cart/" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M3 5h2l2.4 11.2A2 2 0 0 0 9.36 18h8.28a2 2 0 0 0 1.96-1.6L21 9H6"/>
+            <circle cx="10" cy="21" r="1.2"/>
+            <circle cx="18" cy="21" r="1.2"/>
+          </svg>
+          <span class="nav__cart-count" data-cart-count hidden>0</span>
+        </a>
+
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="mobile-drawer" data-nav-toggle>
+          <span class="sr-only">Open menu</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__drawer" id="mobile-drawer" data-open="false" aria-hidden="true">
+      <a class="nav__link" href="/cart/">Cart</a>
+    </div>
+  </header>
+
+  <main id="main" class="events-page">
+
+    <!-- Page header -->
+    <header class="events-header">
+      <h1 class="events-title">Events</h1>
+      <p class="events-subtitle">
+        Gatherings, conversations, and occasions to meet in person and online.
+      </p>
+    </header>
+
+    <!-- Upcoming events -->
+    <section aria-live="polite">
+      <ul class="event-list" data-events-list>
+        <!-- populated by script -->
+      </ul>
+    </section>
+
+    <!-- Past events -->
+    <section class="past-events-block" data-past-block hidden>
+      <button type="button" class="past-events-toggle" data-past-toggle aria-expanded="false">
+        View past events
+      </button>
+      <ul class="event-list past-events" data-past-list hidden>
+        <!-- populated by script -->
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div class="footer__brand-block">
+        <div class="footer__brand" data-site-name></div>
+        <p class="footer__tagline" data-footer-tagline></p>
+      </div>
+      <nav class="footer__links" aria-label="Footer">
+        <a class="footer__link" href="/">Journal</a>
+        <a class="footer__link" href="/about.html">About</a>
+        <a class="footer__link" href="/shop/">Shop</a>
+        <a class="footer__link" href="/events.html">Events</a>
+        <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+      </nav>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© <span data-year>2026</span> <span data-site-name></span> — <span data-footer-copy></span></span>
+      <span>All prices in CAD.</span>
+    </div>
+  </footer>
+
+  <!-- Mobile drawer toggle -->
+  <script type="module">
+    document.querySelector("[data-year]").textContent = new Date().getFullYear();
+
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const drawer = document.getElementById("mobile-drawer");
+    if (toggle && drawer) {
+      toggle.addEventListener("click", () => {
+        const open = drawer.getAttribute("data-open") === "true";
+        drawer.setAttribute("data-open", String(!open));
+        drawer.setAttribute("aria-hidden", String(open));
+        toggle.setAttribute("aria-expanded", String(!open));
+      });
+    }
+  </script>
+
+  <!-- Events listing logic -->
+  <script type="module">
+    import { loadNav, loadFooter, loadSettings } from "/assets/js/site.js";
+    import { getEvents, getPastEvents } from "/assets/js/lib/api.js";
+
+    const DATE_FMT = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric" });
+    const TIME_FMT = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    }
+
+    // "June 10, 2026 · 7:00 PM"
+    function formatWhen(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "";
+      return `${DATE_FMT.format(d)} · ${TIME_FMT.format(d)}`;
+    }
+
+    // Plain-text excerpt from the stored (HTML) description.
+    function excerpt(html) {
+      const text = String(html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      return text;
+    }
+
+    // { dotClass, label } for the online/in-person/both badge.
+    function eventType(ev) {
+      if (ev.is_online && ev.is_inperson) return { dotClass: "event-type-dot--both", label: "Both" };
+      if (ev.is_online) return { dotClass: "event-type-dot--online", label: "Online" };
+      if (ev.is_inperson) return { dotClass: "event-type-dot--inperson", label: "In Person" };
+      return null;
+    }
+
+    function eventItem(ev) {
+      const li = document.createElement("li");
+      li.className = "event-item";
+
+      const type = eventType(ev);
+      const meta = [];
+      const when = formatWhen(ev.event_date);
+      if (when) meta.push(`<span>${escapeHTML(when)}</span>`);
+      if (type) {
+        meta.push(
+          `<span class="event-type"><span class="event-type-dot ${type.dotClass}" aria-hidden="true"></span>${escapeHTML(type.label)}</span>`
+        );
+      }
+      if (ev.is_inperson && ev.location) meta.push(`<span>${escapeHTML(ev.location)}</span>`);
+
+      const desc = excerpt(ev.description);
+      const register = ev.location_url
+        ? `<a class="event-link" href="${escapeHTML(ev.location_url)}" target="_blank" rel="noopener">${ev.is_online ? "Join" : "Register"}</a>`
+        : "";
+
+      li.innerHTML = `
+        <div class="event-content">
+          <div class="event-meta">${meta.join('<span aria-hidden="true">·</span>')}</div>
+          <a class="event-title" href="/event.html?slug=${encodeURIComponent(ev.slug)}">${escapeHTML(ev.title)}</a>
+          ${desc ? `<p class="event-excerpt">${escapeHTML(desc)}</p>` : ""}
+          ${register}
+        </div>
+        ${ev.cover_url ? `<img class="event-thumb" src="${escapeHTML(ev.cover_url)}" alt="" loading="lazy" decoding="async" />` : ""}
+      `;
+      return li;
+    }
+
+    function emptyState() {
+      const li = document.createElement("li");
+      li.className = "events-empty";
+      li.textContent = "No upcoming events.";
+      return li;
+    }
+
+    async function load() {
+      const list = document.querySelector("[data-events-list]");
+      const pastBlock = document.querySelector("[data-past-block]");
+      const pastList = document.querySelector("[data-past-list]");
+      const pastToggle = document.querySelector("[data-past-toggle]");
+
+      const controller = new AbortController();
+      window.addEventListener("pagehide", () => controller.abort(), { once: true });
+
+      let events;
+      try {
+        events = await getEvents({ limit: 100 }, { signal: controller.signal });
+      } catch (err) {
+        if (err?.name === "AbortError") return;
+        console.error("[events] failed to load", err);
+        list.replaceChildren(emptyState());
+        return;
+      }
+
+      events = Array.isArray(events) ? events : [];
+
+      // getEvents already returns future + today, soonest-first. Filter defensively
+      // so anything that has slipped into the past doesn't show as upcoming.
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const upcoming = events.filter((e) => new Date(e.event_date) >= startOfToday);
+
+      if (!upcoming.length) list.replaceChildren(emptyState());
+      else list.replaceChildren(...upcoming.map(eventItem));
+
+      // Past events are loaded lazily — only fetched on the first expansion of
+      // the toggle (getPastEvents → published events with event_date < now).
+      pastBlock.hidden = false;
+      let pastLoaded = false;
+      pastToggle.addEventListener("click", async () => {
+        const open = pastToggle.getAttribute("aria-expanded") === "true";
+
+        if (!open && !pastLoaded) {
+          pastLoaded = true;
+          pastToggle.disabled = true;
+          try {
+            let past = await getPastEvents({ signal: controller.signal });
+            past = Array.isArray(past) ? past : [];
+            if (past.length) {
+              pastList.replaceChildren(...past.map(eventItem));
+            } else {
+              const li = document.createElement("li");
+              li.className = "events-empty";
+              li.textContent = "No past events.";
+              pastList.replaceChildren(li);
+            }
+          } catch (err) {
+            if (err?.name === "AbortError") { pastToggle.disabled = false; return; }
+            pastLoaded = false; // allow a retry on next click
+            console.error("[events] failed to load past events", err);
+            const li = document.createElement("li");
+            li.className = "events-empty";
+            li.textContent = "Couldn’t load past events.";
+            pastList.replaceChildren(li);
+          } finally {
+            pastToggle.disabled = false;
+          }
+        }
+
+        pastToggle.setAttribute("aria-expanded", String(!open));
+        pastToggle.textContent = open ? "View past events" : "Hide past events";
+        pastList.hidden = open;
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadNav();
+      loadSettings();
+      loadFooter();
+      load();
+    });
+  </script>
+
+</body>
+</html>

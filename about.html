@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#2B3E1E" />
 
-  <title>About — A Case for Wisdom</title>
-  <meta name="description" content="The story behind A Case for Wisdom — a quiet, considered home for faith and wisdom writing." />
+  <title>About | A Case for Wisdom</title>
+  <meta name="description" content="The story behind A Case for Wisdom, a home for faith and wisdom writing." />
 
   <link rel="canonical" href="https://acaseforwisdom.com/about.html" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="About — A Case for Wisdom" />
+  <meta property="og:title" content="About | A Case for Wisdom" />
   <meta property="og:description" content="The story behind A Case for Wisdom." />
   <meta property="og:image" content="/assets/images/og-image.jpg" />
   <meta property="og:url" content="https://acaseforwisdom.com/about.html" />
@@ -78,32 +78,26 @@
 
   <main id="main">
 
-    <!-- ============================================================
-         SECTION 1 — Editorial header
-         ============================================================ -->
+    <!-- Editorial header -->
     <section class="about-header" aria-labelledby="about-heading">
-      <div class="about-header__inner reveal">
-        <p class="about-header__eyebrow">About</p>
+      <div class="about-header__inner">
         <h1 class="about-headline" id="about-heading" data-setting="about_headline">
-          A quiet case for wisdom, kept slowly.
+          About A Case for Wisdom
         </h1>
+        <!-- TODO: Replace with real About copy written by the site owner.
+             Say plainly what A Case for Wisdom is and who runs it. -->
         <div class="about-body" data-setting="about_body">
           <p>
-            A Case for Wisdom is an editorial home for faith and wisdom writing —
-            essays, reflections, and letters drawn from scripture, season, and the
-            long patience of a life lived attentively. It is written slowly and
-            published without hurry.
+            A Case for Wisdom publishes essays, reflections, and letters on
+            faith, wisdom, and scripture.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================
-         SECTION 2 — Pull quote
-         ============================================================ -->
+    <!-- Pull quote -->
     <section class="about-quote" aria-label="A line to keep">
-      <div class="about-quote__inner reveal">
-        <hr class="about-quote__mark" aria-hidden="true" />
+      <div class="about-quote__inner">
         <blockquote class="about-quote__text" data-setting="about_quote">
           The beginning of wisdom is this: get wisdom, and whatever you get, get insight.
         </blockquote>
@@ -118,32 +112,16 @@
        ============================================================ -->
   <footer class="footer" role="contentinfo">
     <div class="footer__inner">
-      <div>
+      <div class="footer__brand-block">
         <div class="footer__brand" data-site-name></div>
         <p class="footer__tagline" data-footer-tagline></p>
       </div>
-      <div>
-        <p class="footer__heading">Read</p>
-        <div class="footer__list">
-          <a class="footer__link" href="/">Journal</a>
-          <a class="footer__link" href="/about.html">About</a>
-        </div>
-      </div>
-      <div>
-        <p class="footer__heading">Shop</p>
-        <div class="footer__list">
-          <a class="footer__link" href="/shop/">All products</a>
-          <a class="footer__link" href="/cart/">Cart</a>
-        </div>
-      </div>
-      <div>
-        <p class="footer__heading">Elsewhere</p>
-        <div class="footer__list">
-          <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
-          <a class="footer__link" data-social="substack" href="#" rel="noopener" hidden>Substack</a>
-          <a class="footer__link" href="mailto:hello@acaseforwisdom.com">Write</a>
-        </div>
-      </div>
+      <nav class="footer__links" aria-label="Footer">
+        <a class="footer__link" href="/">Journal</a>
+        <a class="footer__link" href="/about.html">About</a>
+        <a class="footer__link" href="/shop/">Shop</a>
+        <a class="footer__link" data-social="instagram" href="#" rel="noopener" hidden>Instagram</a>
+      </nav>
     </div>
     <div class="footer__bottom">
       <span>© <span data-year>2026</span> <span data-site-name></span> — <span data-footer-copy></span></span>
@@ -151,7 +129,7 @@
     </div>
   </footer>
 
-  <!-- Mobile drawer + reveal -->
+  <!-- Mobile drawer -->
   <script type="module">
     document.querySelector("[data-year]").textContent = new Date().getFullYear();
     const toggle = document.querySelector("[data-nav-toggle]");
@@ -164,20 +142,6 @@
         toggle.setAttribute("aria-expanded", String(!open));
       });
     }
-    window.__revealObserve = (root = document) => {
-      const reveals = root.querySelectorAll(".reveal:not(.is-visible)");
-      if ("IntersectionObserver" in window && reveals.length) {
-        const io = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) { entry.target.classList.add("is-visible"); io.unobserve(entry.target); }
-          });
-        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
-        reveals.forEach((el) => io.observe(el));
-      } else {
-        reveals.forEach((el) => el.classList.add("is-visible"));
-      }
-    };
-    window.__revealObserve();
   </script>
 
   <!-- Chrome + settings -->
